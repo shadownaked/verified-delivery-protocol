@@ -179,10 +179,13 @@ fi
 echo
 
 # ---- 7. 无空壳目录（体系明令禁止预建空目录；仅检查模板主体） ----
+# 注意：除排除目录内容外，还要排除本地目录**本身**——否则本脚本 [9] 清理后留下的空
+# `.artifacts/` 会被自己判为空壳目录（自造假红）。
 echo "[7] 空目录检查（模板主体）"
 EMPTY=$(find . -type d -empty \
     -not -path "./.git/*" -not -path "./.repo-meta/*" -not -path "./.screenshots/*" \
     -not -path "./.artifacts/*" -not -path "*/node_modules/*" -not -path "*/vendor/*" \
+    -not -path "./.repo-meta" -not -path "./.screenshots" -not -path "./.artifacts" \
     2>/dev/null | tr '\n' ' ')
 if [ -z "$EMPTY" ]; then ok "无空目录"; else no "存在空目录:$EMPTY"; fi
 echo
@@ -268,6 +271,7 @@ if grep -q '^BENCH: OK' "$TMPD/pass.txt"; then ok "成功路径标注 BENCH: OK"
 if grep -q '^BENCH: FAIL' "$TMPD/fail.txt"; then ok "失败路径标注 BENCH: FAIL"; else no "失败路径缺少 BENCH: FAIL"; fi
 
 rm -rf "$TMPD"
+rmdir ".artifacts" 2>/dev/null || true
 echo
 
 # ---- 10. 异常占位标记（孤立的空内联代码；合法代码围栏不误报） ----
