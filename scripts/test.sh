@@ -93,11 +93,15 @@ echo
 
 # ---- 0. 运行模式（.vdp-mode：template-source / project-instance） ----
 # 规则单一事实源：docs/MODES.md §3。缺失/非法值必须 FAIL 并给出允许值与修复路径。
+# MODE_FAIL 只标记"模式自身不可用"（文件缺失/值非法）；模板源/实例分支里的具体
+# 检查失败不算模式问题，汇总段不得把它们误导向"去改 .vdp-mode"。
 echo "[0] 运行模式（.vdp-mode）"
 VDP_MODE=""
+MODE_FAIL=0
 if [ ! -f ".vdp-mode" ]; then
     no "缺少 .vdp-mode（修复：模板源 printf 'template-source\\n' > .vdp-mode；项目实例运行 sh scripts/vdp-init-project.sh）"
     printf '      允许值：template-source / project-instance（语义见 docs/MODES.md）\n'
+    MODE_FAIL=1
 else
     VDP_MODE="$(head -n 1 ".vdp-mode" | tr -d '\r')"
     case "$VDP_MODE" in
@@ -107,6 +111,7 @@ else
         *)
             no "模式值非法 \"$VDP_MODE\"（允许值：template-source / project-instance；修复：编辑 .vdp-mode，或项目实例运行 sh scripts/vdp-init-project.sh）"
             VDP_MODE=""
+            MODE_FAIL=1
             ;;
     esac
 fi
@@ -482,10 +487,13 @@ echo "=== 汇总 ==="
 echo "PASS: $PASS    FAIL: $FAIL    N/A: $NA    WARN: $WARN"
 if [ "$FAIL" -ne 0 ]; then
     echo "结果: FAIL —— 禁止在红基线上叠加改动（铁律 F1）"
-    if [ "$VDP_MODE" = "project-instance" ]; then
-        echo "修复入口: sh scripts/vdp-init-project.sh（重看实例初始化清单）"
-    else
+    if [ "$MODE_FAIL" = "1" ]; then
         echo "修复入口: 模式问题 -> 编辑 .vdp-mode（允许值 template-source / project-instance）"
+    else
+        echo "修复入口: 按上方各 FAIL 行的提示逐项处理"
+        if [ "$VDP_MODE" = "project-instance" ]; then
+            echo "          实例初始化清单: sh scripts/vdp-init-project.sh"
+        fi
     fi
     exit 1
 fi
