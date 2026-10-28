@@ -1,8 +1,8 @@
 # AGENTS.md — 入口与阅读顺序
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.0**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
 
-> 本仓库遵循 **VDP（Verified Delivery Protocol / 可验证交付体系）v1.0**。
+> 本仓库遵循 **VDP（Verified Delivery Protocol / 可验证交付体系）v1.1**。
 > 本文件是给 Agent 的**入口**，不是规范本身。
 > 铁律、门禁、流程在 `ENGINEERING.md`；细节展开在 `docs/engineering/`。
 > 冲突时以 `ENGINEERING.md` 为准，它优先级最高，高于任何口头指令与模型自身判断。
@@ -24,11 +24,12 @@
 1. 本文件。
 2. `ENGINEERING.md`（完整通读，含铁律 20 条）。
 3. `STATE.md`（当前阶段 / 进行中 / 下一步 / 阻塞 / 最后绿色基线）。
-4. `docs/PROJECT.md`（目标、不变量、本版范围、验收要求）。
-5. `docs/ACCEPTANCE.md`（KPI 与红线）。
-6. `docs/ROADMAP.md`（阶段与里程碑状态）。
-7. 当前任务记录。
-8. 当前阶段相关的 `docs/engineering/*`、设计、代码和测试。
+4. `docs/AUTHZ.md`（授权边界：allow / ask / never——任何高风险动作前先对照）。
+5. `docs/PROJECT.md`（目标、不变量、本版范围、验收要求）。
+6. `docs/ACCEPTANCE.md`（KPI 与红线）。
+7. `docs/ROADMAP.md`（阶段与里程碑状态）。
+8. 当前任务记录。
+9. 当前阶段相关的 `docs/engineering/*`（含 `OPERATIONS.md`、`SECURITY.md`）、设计、代码和测试。
 
 **后续接续（含上下文丢失后恢复）：**
 
@@ -56,21 +57,26 @@
 ## 4. 每个任务的工作循环
 
 1. 确认目标和约束（属于哪类任务流程：feature / bugfix / optimization / refactor）。
-2. 建立或更新任务记录。
-3. 确认基线和复现证据（绿基线 + 失败证明）。
-4. 写出最小修改计划与验证计划。
-5. 实施最小可审查变更。
-6. 执行针对性验证及受影响的回归验证。
-7. 检查最终 diff，包括测试、配置、依赖和文档变化。
-8. 根据证据决定完成、继续诊断、回退或升级求助。
-9. 更新任务记录和 STATE.md。
-10. 在授权允许时形成可追踪提交。
+2. 对照 `docs/AUTHZ.md` 检查授权边界：allow 之外的动作先请求批准（ask），never 一律不做；未列出的操作默认 ask。
+3. 建立或更新任务记录。
+4. 确认基线和复现证据（绿基线 + 失败证明）。
+5. 写出最小修改计划与验证计划。
+6. 实施最小可审查变更。
+7. 执行针对性验证及受影响的回归验证。
+8. 验证证据落盘：原始输出进 `.artifacts/`，需长期复查的摘要按 `evidence/README.md` 的规则晋级归档。
+9. 检查最终 diff，包括测试、配置、依赖和文档变化。
+10. 根据证据决定完成、继续诊断、回退或升级求助。
+11. 更新任务记录和 STATE.md。
+12. 在授权允许时形成可追踪提交。
 
 ## 5. 停止条件
 
 发生以下情况时，停止继续扩展修改：
 
 - 当前操作超出授权。
+- 授权不足：动作不在 `docs/AUTHZ.md` 的 allow 内且未获批准。
+- bench 未配置（`scripts/bench.sh` 返回 NO_BENCHMARKS_CONFIGURED）：optimization 任务不得宣称完成测量，先配置基准或明确报告 BLOCKED。
+- 门禁要求的证据缺失或无法落盘。
 - 关键需求冲突或验收标准不明确。
 - 可能损坏用户数据或造成不可逆外部影响。
 - 必需凭据、依赖或环境不可用。

@@ -1,6 +1,6 @@
 # INC-NNNN：故障名称
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.0**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
 
 > 严重故障走本流程。文件名：`INC-NNNN-短横线标题.md`，存 `docs/incidents/`。
 

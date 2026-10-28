@@ -1,0 +1,23 @@
+# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1
+# docs/bench/benchmarks.yml — bench 基准声明（scripts/bench.sh 的输入）
+#
+# 格式（bench.sh 只解析这个最小子集，不需要完整 YAML 解析器）：
+#   benchmarks:
+#     - name: <标识>        # 仅 [A-Za-z0-9._-]，用于日志与证据文件名；不得为空
+#       run: "<命令>"       # 经 sh -c 在仓库根目录执行；留空（run: ""）= 该项未配置
+#
+# 规则：
+#   - 所有条目的 run 为空（或本文件不存在）时，bench.sh 输出
+#     BENCH: NO_BENCHMARKS_CONFIGURED 并以退出码 2 拒绝——这是诚实拒绝，不是失败。
+#   - optimization 任务（ENGINEERING.md §3.3）必须在 run 配置真实基准后，
+#     才允许宣称完成 before/after 测量。
+#   - 命令由本项目自己声明并纳入版本管理；不要放入需要真实凭据的命令
+#     （缺凭据的基准应输出明确的 BLOCKED 信息并以非 0 退出）。
+#   - 基准应是可重复的：固定负载、固定种子、固定环境说明（见 QUALITY.md §6）。
+#
+# 本模板默认不配置任何真实基准：本体系是文档与流程规范，无可测运行时性能
+# （见 README §"验证与开发"）。下游项目按需替换本文件内容。
+
+benchmarks:
+  - name: example
+    run: ""

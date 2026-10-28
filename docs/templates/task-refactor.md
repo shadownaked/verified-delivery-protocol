@@ -1,6 +1,6 @@
 # TASK-XXX：refactor 任务
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.0**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
 
 > 前置：目标行为已被测试锁定。不够先补特征测试（characterization test），
 > 补测试是**独立提交**，不计入本次重构 diff。

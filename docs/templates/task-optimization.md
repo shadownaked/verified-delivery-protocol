@@ -1,6 +1,6 @@
 # TASK-XXX：optimization 任务
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.0**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
 
 > 反"负优化"专用。铁律：禁止存在没有 before/after 数字的"优化"；
 > 禁止以"看起来更优雅"为由保留改动。

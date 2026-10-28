@@ -1,6 +1,6 @@
 # 合并裁决说明（_MERGE_NOTES）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.0**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
 
 > 本文件记录**两套体系合并时我做的每一个判断**，供你复核。
 > 合并原则：1:1 保留双方实质内容，不删、不改写；冲突处选一边并说明取舍理由；

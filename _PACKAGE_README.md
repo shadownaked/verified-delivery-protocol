@@ -1,6 +1,6 @@
 # Verified Delivery Protocol（VDP）· 可验证交付体系 — 模板包说明
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.0**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
 
 > 本文件是**模板包自身的说明**，不属于规范体系，进项目后可删除。
 > 合并自两套体系：[A] 通用项目开发作业规范 v1.0 + [B] 工程宪法体系。
@@ -37,16 +37,23 @@ project-root/
 ├── docs/
 │   ├── PROJECT.md             # 项目合同（已并入 charter 立项书）
 │   ├── ACCEPTANCE.md          # 验收 KPI 与红线（可测量的 Done）
-│   ├── BASELINES.md           # 指标基线记录表（反退化数据基础）
+│   ├── BASELINES.md           # 指标基线记录表（含工程健康基线；反退化数据基础）
 │   ├── DESIGN.md              # 设计说明（简单项目可并入 PROJECT）
 │   ├── ROADMAP.md             # 八阶段与门的状态
 │   ├── RUNBOOK.md             # 运行 / 测试 / 发布 / 回滚手册（须演练）
 │   ├── BACKLOG.md             # 一切"顺手想到的"都进这里，不进代码
+│   ├── AUTHZ.md               # Agent 授权边界（allow / ask / never）
+│   │                          #   机器可读版：AUTHZ.yaml（两者同提交同步改）
+│   │
+│   ├── bench/
+│   │   └── benchmarks.yml     # bench 基准声明（scripts/bench.sh 输入；默认未配置）
 │   │
 │   ├── engineering/
 │   │   ├── WORKFLOW.md        # 阶段展开（含 S→P 映射表、存量接入协议）
-│   │   ├── QUALITY.md         # 质量与验证展开
-│   │   ├── FILES.md           # 文件系统、命名、Git、依赖、秘密
+│   │   ├── QUALITY.md         # 质量与验证展开（含 bench 入口契约）
+│   │   ├── FILES.md           # 文件系统、命名、Git、依赖、秘密、双层证据制度
+│   │   ├── OPERATIONS.md      # 运营与可靠性（SLI / SLO / Error Budget）
+│   │   ├── SECURITY.md        # 安全工程（P0–P7 阶段化安全活动）
 │   │   └── BOOTSTRAP_PROMPT.md  # 启动指令（新项目 / 存量接入 / 精简模式）
 │   │
 │   ├── templates/
@@ -65,11 +72,13 @@ project-root/
 │   ├── releases/              # v0.1.0.md
 │   └── journal/               # YYYY-MM-DD.md
 │
+├── evidence/                  # 长期证据（入库；本模板预置 README 与 operations/security 模板）
+│
 ├── dist/                      # 生成产物：完整合并版（便携快照，可由主文件重生成）
 │   └── verified-delivery-protocol-complete.md
 │
-└── .artifacts/                # 本地运行产物，通常不纳入 Git
-    ├── logs/  test-results/  benchmarks/
+└── .artifacts/                # 本地运行产物（bench 证据等），通常不纳入 Git
+    ├── logs/  test-results/  benchmarks/  bench/
 ```
 
 **不要为了符合目录树生成大量空目录、空模块、空文档。** 上述 `tasks/`、`decisions/`、`incidents/`、`releases/`、`journal/`、`golden/`、`.artifacts/` 在本包中均**未预建**。
@@ -83,17 +92,23 @@ project-root/
 | 文件 | 性质 | 说明 |
 |---|---|---|
 | `ENGINEERING.md` | 固定制度·核心 | 铁律 F1–F20、P0–P7、四类任务流程、收敛协议、会话协议、门禁清单 |
-| `AGENTS.md` | 固定制度 | 入口、阅读顺序、工作循环、停止条件、完成汇报 |
+| `AGENTS.md` | 固定制度 | 入口、阅读顺序、工作循环（含授权检查与证据落盘）、停止条件、完成汇报 |
 | `STATE.md` | 项目事实 | 状态机，开工读、收工写 |
 | `README.md` / `CHANGELOG.md` / `.gitignore` | 项目事实 | 面向使用者 |
 | `docs/PROJECT.md` | 项目事实 | 合同 + charter |
 | `docs/ACCEPTANCE.md` | 项目事实 | KPI 与红线（3–8 个） |
-| `docs/BASELINES.md` | 项目事实 | 基线记录表 |
+| `docs/BASELINES.md` | 项目事实 | 基线记录表 + 工程健康基线 |
+| `docs/AUTHZ.md` + `docs/AUTHZ.yaml` | 固定制度 | Agent 授权边界（allow / ask / never；人读 + 机器可读） |
 | `docs/DESIGN.md` / `ROADMAP.md` / `RUNBOOK.md` / `BACKLOG.md` | 项目事实 | 按需填 |
 | `docs/engineering/WORKFLOW.md` | 固定制度 | 阶段展开 |
-| `docs/engineering/QUALITY.md` | 固定制度 | 质量验证展开 |
-| `docs/engineering/FILES.md` | 固定制度 | 文件与命名 |
+| `docs/engineering/QUALITY.md` | 固定制度 | 质量验证展开（含 bench 入口契约） |
+| `docs/engineering/FILES.md` | 固定制度 | 文件与命名（含双层证据制度） |
+| `docs/engineering/OPERATIONS.md` | 固定制度 | SLI / SLO / Error Budget 与变更冻结规则 |
+| `docs/engineering/SECURITY.md` | 固定制度 | P0–P7 阶段化安全活动 |
 | `docs/engineering/BOOTSTRAP_PROMPT.md` | 固定制度 | 三种启动指令 |
+| `docs/bench/benchmarks.yml` | 项目事实 | bench 基准声明（默认未配置） |
+| `evidence/README.md` + `evidence/*` 模板 | 固定制度·模板 | 长期证据目录与 operations / security 证据模板 |
+| `scripts/test.sh` / `scripts/bench.sh` / `scripts/build-complete.sh` | 固定制度·硬依赖 | 绿基线自检 / 性能基准入口 / 合并版重生成 |
 | `docs/templates/*` ×8 | 模板 | feature/bugfix/optimization/refactor/adr/incident/release/journal |
 | `dist/verified-delivery-protocol-complete.md` | **生成产物** | 上述全部内容的单文件合并版（便携快照），由主文件重生成，非权威源 |
 | `_MERGE_NOTES.md` | 包说明 | 合并裁决，供复核 |

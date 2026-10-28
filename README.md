@@ -1,12 +1,12 @@
 # 项目名称
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.0**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
 
 一句话说明：它为谁解决什么问题。
 
 ## 状态
 
-- 开发协议：**VDP v1.0**（Verified Delivery Protocol / 可验证交付体系）
+- 开发协议：**VDP v1.1**（Verified Delivery Protocol / 可验证交付体系）
 - 当前版本：
 - 当前阶段：P_
 - 当前成熟度：实验 / 可试用 / 已发布 / 停止维护
@@ -68,9 +68,9 @@
 | 操作 | 实际命令 | 包含范围 |
 |---|---|---|
 | 安装依赖 | _（本模板包无运行时依赖，仅需 sh / grep / find / wc）_ | — |
-| 全量测试 | `sh scripts/test.sh` | 核心文件存在性、铁律 F1–F20 连续、阶段 P0–P7、门禁/发布清单项数、VDP 标识覆盖、产物新鲜度、空目录、旧名残留 |
+| 全量测试 | `sh scripts/test.sh` | 核心文件存在性、铁律 F1–F20 连续、阶段 P0–P7、门禁/发布清单项数、VDP 标识覆盖、产物新鲜度、空目录、旧名残留、bench 入口契约、异常占位标记、证据目录与忽略策略 |
 | 构建合并版 | `sh scripts/build-complete.sh` | 重生成 `dist/verified-delivery-protocol-complete.md` |
-| 性能测量 | **不适用** | 本体系是文档与流程规范，无运行时性能可测。按 `PROJECT.md` §"质量预算"的规矩：不适用项须注明原因，不伪称已测 |
+| 性能测量 | `sh scripts/bench.sh` | bench 契约入口：未配置基准时输出 `BENCH: NO_BENCHMARKS_CONFIGURED` 并以退出码 2 诚实拒绝（本包为文档型体系，无可测运行时性能，属预期状态）；基准声明见 `docs/bench/benchmarks.yml` |
 
 说明哪些验证需要真实环境或额外权限：**本包全部验证均离线可执行，无需真实环境或额外凭据。**
 
@@ -93,11 +93,15 @@
 - 工程宪法：ENGINEERING.md
 - Agent 入口：AGENTS.md
 - 当前状态：STATE.md
+- 授权边界：docs/AUTHZ.md（机器可读版：docs/AUTHZ.yaml）
 - 项目合同：docs/PROJECT.md
 - 验收 KPI：docs/ACCEPTANCE.md
 - 指标基线：docs/BASELINES.md
 - 路线图：docs/ROADMAP.md
 - 运行手册：docs/RUNBOOK.md
+- 安全工程：docs/engineering/SECURITY.md
+- 运营可靠性：docs/engineering/OPERATIONS.md
+- 长期证据：evidence/README.md
 - 版本变化：CHANGELOG.md
 - 完整合并版（便携快照）：dist/verified-delivery-protocol-complete.md
 

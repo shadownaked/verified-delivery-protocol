@@ -25,7 +25,10 @@ STATE.md
 docs/engineering/WORKFLOW.md
 docs/engineering/QUALITY.md
 docs/engineering/FILES.md
+docs/engineering/OPERATIONS.md
+docs/engineering/SECURITY.md
 docs/engineering/BOOTSTRAP_PROMPT.md
+docs/AUTHZ.md
 docs/PROJECT.md
 docs/ACCEPTANCE.md
 docs/BASELINES.md
@@ -62,7 +65,7 @@ mkdir -p dist
 
 # 头部：声明性质、权威源、重生成方式
 cat > "$OUT" <<'HEADER'
-# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.0
+# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1
 ## 完整合并版（便携快照）
 
 > **本文件是生成产物，不是权威源。**
@@ -82,12 +85,15 @@ cat > "$OUT" <<'HEADER'
 2. `AGENTS.md` — Agent 入口与阅读顺序
 3. `STATE.md` — 项目状态机
 4. `docs/engineering/WORKFLOW.md` — 阶段展开
-5. `docs/engineering/QUALITY.md` — 质量与验证
-6. `docs/engineering/FILES.md` — 文件系统与命名
-7. `docs/engineering/BOOTSTRAP_PROMPT.md` — 三种启动指令
-8. `docs/PROJECT.md` → `BACKLOG.md` — 项目事实文件与模板
-9. `README.md` / `CHANGELOG.md` / `.gitignore`
-10. `_PACKAGE_README.md` / `_MERGE_NOTES.md` — 包说明与合并裁决
+5. `docs/engineering/QUALITY.md` — 质量与验证（含 bench 入口契约）
+6. `docs/engineering/FILES.md` — 文件系统与命名（含双层证据制度）
+7. `docs/engineering/OPERATIONS.md` — 运营与可靠性（SLI / SLO / Error Budget）
+8. `docs/engineering/SECURITY.md` — 安全工程（阶段化安全活动）
+9. `docs/engineering/BOOTSTRAP_PROMPT.md` — 三种启动指令
+10. `docs/AUTHZ.md` — Agent 授权边界（机器可读版：docs/AUTHZ.yaml）
+11. `docs/PROJECT.md` → `BACKLOG.md` — 项目事实文件与模板
+12. `README.md` / `CHANGELOG.md` / `.gitignore`
+13. `_PACKAGE_README.md` / `_MERGE_NOTES.md` — 包说明与合并裁决
 
 ---
 HEADER

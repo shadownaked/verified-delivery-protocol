@@ -1,6 +1,6 @@
 # 质量与验证（QUALITY）—— ENGINEERING.md §6/§7 的展开
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.0**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
 
 > 本文件写"验证怎么做才有效"。铁律与门禁见 `ENGINEERING.md`。
 
@@ -164,6 +164,16 @@ REQ-需求
 - `clean` 不得删除用户数据、源文件或未识别内容。
 
 **`scripts/test.sh` 与 `scripts/bench.sh` 是硬依赖**：铁律 F1 绿基线、门禁清单第 1 项、optimization 流程都直接指向它们。最小可只含一条命令，但必须有。
+
+### bench 入口契约
+
+`scripts/bench.sh` 的最小契约（模板已内置实现；项目在 `docs/bench/benchmarks.yml` 声明自己的基准）：
+
+- 未配置任何可运行基准 → 输出 `BENCH: NO_BENCHMARKS_CONFIGURED`，退出码 2（诚实拒绝：既不是成功也不是失败；此状态下 optimization 任务不得宣称完成测量）。
+- 基准执行失败 → `BENCH: FAIL <名称>`，退出码 1；全部成功 → `BENCH: OK`，退出码 0。
+- 每次运行把元信息与摘要落盘到 `.artifacts/bench/<UTC时间戳>/`（`meta.json` + `summary.md` + 各基准日志）；可用环境变量 `VDP_BENCH_EVIDENCE_ROOT` 重定向证据目录。
+- optimization 流程（ENGINEERING.md §3.3）的 before/after 数字必须来自 bench 证据目录，不得手填。
+- `scripts/test.sh` 检查 [9] 逐项校验本契约（存在性、`BENCH:` 前缀、退出码 ∈ {0,1,2}、拒绝理由明确）。
 
 ## 9. 把制度落实成机械约束
 

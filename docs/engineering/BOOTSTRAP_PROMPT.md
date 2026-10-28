@@ -1,6 +1,6 @@
 # 启动指令（复制给 Agent）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.0**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
 
 ## 新项目 / 首次接入
 

@@ -1,6 +1,6 @@
 # ADR-NNNN：决策名称
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.0**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
 
 > 只为有长期影响或明显取舍的决定建立 ADR，不要把每个变量名都变成决策文件。
 > 文件名：`ADR-NNNN-短横线标题.md`，存 `docs/decisions/`。

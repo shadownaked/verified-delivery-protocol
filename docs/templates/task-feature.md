@@ -1,6 +1,6 @@
 # TASK-XXX：feature 任务
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.0**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
 
 状态：TODO / DOING / BLOCKED / REVIEW / DONE / CANCELLED
 类型：feature
