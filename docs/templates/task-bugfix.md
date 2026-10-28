@@ -1,6 +1,6 @@
 # TASK-XXX：bugfix 任务
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 状态：TODO / DOING / BLOCKED / REVIEW / DONE / CANCELLED
 类型：bugfix

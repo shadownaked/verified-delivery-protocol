@@ -1,6 +1,6 @@
 # 发布记录：版本号
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 存 `docs/releases/`。本文件记录"某次交付实际包含什么、验证了什么"。
 > 面向人的版本变化摘要另见 `CHANGELOG.md`。

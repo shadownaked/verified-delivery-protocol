@@ -1,6 +1,6 @@
 # 威胁模型（模板）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 制度见 `docs/engineering/SECURITY.md`。P0 立项时初版，此后每个新入口 / 新数据类型出现时更新。
 > 本文件入库前必须脱敏（F17）。

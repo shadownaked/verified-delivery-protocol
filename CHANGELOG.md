@@ -1,6 +1,6 @@
 # Changelog
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 记录使用者可感知的变化，不复制全部提交历史。
 每条含**动机与回滚点**。逐条功能细节见 `docs/releases/`。

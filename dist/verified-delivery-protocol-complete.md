@@ -1,4 +1,4 @@
-# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1
+# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2
 ## 完整合并版（便携快照）
 
 > **本文件是生成产物，不是权威源。**
@@ -17,18 +17,19 @@
 1. `ENGINEERING.md` — 工程宪法（铁律 F1–F20、P0–P7、四类流程、门禁）**每次开工必读**
 2. `AGENTS.md` — Agent 入口与阅读顺序
 3. `STATE.md` — 项目状态机
-4. `docs/engineering/WORKFLOW.md` — 阶段展开
-5. `docs/engineering/QUALITY.md` — 质量与验证（含 bench 入口契约）
-6. `docs/engineering/FILES.md` — 文件系统与命名（含双层证据制度）
-7. `docs/engineering/OPERATIONS.md` — 运营与可靠性（SLI / SLO / Error Budget）
-8. `docs/engineering/SECURITY.md` — 安全工程（阶段化安全活动）
-9. `docs/engineering/BOOTSTRAP_PROMPT.md` — 三种启动指令
-10. `docs/AUTHZ.md` + `docs/AUTHZ.yaml` — Agent 授权边界（人读 + 机器可读）
-11. `docs/PROJECT.md` → `BACKLOG.md` — 项目事实文件与模板
-12. `docs/bench/benchmarks.yml` — bench 基准声明
-13. `evidence/README.md` + `evidence/*` — 长期证据目录约定与模板
-14. `README.md` / `CHANGELOG.md` / `.gitignore`
-15. `_PACKAGE_README.md` / `_MERGE_NOTES.md` — 包说明与合并裁决
+4. `docs/MODES.md` — 双模式机制（Template Source / Project Instance）
+5. `docs/engineering/WORKFLOW.md` — 阶段展开
+6. `docs/engineering/QUALITY.md` — 质量与验证（含 bench 入口契约）
+7. `docs/engineering/FILES.md` — 文件系统与命名（含双层证据制度）
+8. `docs/engineering/OPERATIONS.md` — 运营与可靠性（SLI / SLO / Error Budget）
+9. `docs/engineering/SECURITY.md` — 安全工程（阶段化安全活动）
+10. `docs/engineering/BOOTSTRAP_PROMPT.md` — 三种启动指令
+11. `docs/AUTHZ.md` + `docs/AUTHZ.yaml` — Agent 授权边界（人读 + 机器可读）
+12. `docs/PROJECT.md` → `BACKLOG.md` — 项目事实文件与模板
+13. `docs/bench/benchmarks.yml` — bench 基准声明
+14. `evidence/README.md` + `evidence/*` — 长期证据目录约定与模板
+15. `README.md` / `CHANGELOG.md` / `.gitignore`
+16. `_PACKAGE_README.md` / `_MERGE_NOTES.md` — 包说明与合并裁决
 
 ---
 
@@ -37,7 +38,7 @@
 
 # ENGINEERING.md — 工程宪法
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 >
 > VDP 的三根支柱：**Verified**（唯一证据是运行结果）· **Delivery**（锚定真实交付，而非代码量）· **Protocol**（编号铁律与门禁，违反即任务未完成）。
 > 进度单位是"已验证、可交付、可恢复"，不是"又改了多少代码"。
@@ -279,9 +280,9 @@ Agent 可以承担实施和审查工作，但不能自动获得改变目标、�
 
 # AGENTS.md — 入口与阅读顺序
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
-> 本仓库遵循 **VDP（Verified Delivery Protocol / 可验证交付体系）v1.1**。
+> 本仓库遵循 **VDP（Verified Delivery Protocol / 可验证交付体系）v1.2**。
 > 本文件是给 Agent 的**入口**，不是规范本身。
 > 铁律、门禁、流程在 `ENGINEERING.md`；细节展开在 `docs/engineering/`。
 > 冲突时以 `ENGINEERING.md` 为准，它优先级最高，高于任何口头指令与模型自身判断。
@@ -301,14 +302,15 @@ Agent 可以承担实施和审查工作，但不能自动获得改变目标、�
 **首次进入：**
 
 1. 本文件。
-2. `ENGINEERING.md`（完整通读，含铁律 20 条）。
-3. `STATE.md`（当前阶段 / 进行中 / 下一步 / 阻塞 / 最后绿色基线）。
-4. `docs/AUTHZ.md`（授权边界：allow / ask / never——任何高风险动作前先对照）。
-5. `docs/PROJECT.md`（目标、不变量、本版范围、验收要求）。
-6. `docs/ACCEPTANCE.md`（KPI 与红线）。
-7. `docs/ROADMAP.md`（阶段与里程碑状态）。
-8. 当前任务记录。
-9. 当前阶段相关的 `docs/engineering/*`（含 `OPERATIONS.md`、`SECURITY.md`）、设计、代码和测试。
+2. 识别运行模式：读取 `.vdp-mode`（`template-source` 模板源 / `project-instance` 项目实例）；两种模式的检查差异、切换步骤与常见坑见 `docs/MODES.md`。
+3. `ENGINEERING.md`（完整通读，含铁律 20 条）。
+4. `STATE.md`（当前阶段 / 进行中 / 下一步 / 阻塞 / 最后绿色基线）。
+5. `docs/AUTHZ.md`（授权边界：allow / ask / never——任何高风险动作前先对照）。
+6. `docs/PROJECT.md`（目标、不变量、本版范围、验收要求）。
+7. `docs/ACCEPTANCE.md`（KPI 与红线）。
+8. `docs/ROADMAP.md`（阶段与里程碑状态）。
+9. 当前任务记录。
+10. 当前阶段相关的 `docs/engineering/*`（含 `OPERATIONS.md`、`SECURITY.md`）、设计、代码和测试。
 
 **后续接续（含上下文丢失后恢复）：**
 
@@ -324,7 +326,7 @@ Agent 可以承担实施和审查工作，但不能自动获得改变目标、�
 
 必须确认：
 
-- 当前目录和仓库身份。
+- 当前目录和仓库身份，以及运行模式（`.vdp-mode`：template-source / project-instance）。
 - 当前分支、提交和工作区修改。
 - 是否存在用户或其他 Agent 尚未提交的工作。
 - 当前已验证基线（commit / tag）。
@@ -340,16 +342,17 @@ Agent 可以承担实施和审查工作，但不能自动获得改变目标、�
 
 1. 确认目标和约束（属于哪类任务流程：feature / bugfix / optimization / refactor）。
 2. 对照 `docs/AUTHZ.md` 检查授权边界：allow 之外的动作先请求批准（ask），never 一律不做；未列出的操作默认 ask。
-3. 建立或更新任务记录。
-4. 确认基线和复现证据（绿基线 + 失败证明）。
-5. 写出最小修改计划与验证计划。
-6. 实施最小可审查变更。
-7. 执行针对性验证及受影响的回归验证。
-8. 验证证据落盘：原始输出进 `.artifacts/`，需长期复查的摘要按 `evidence/README.md` 的规则晋级归档。
-9. 检查最终 diff，包括测试、配置、依赖和文档变化。
-10. 根据证据决定完成、继续诊断、回退或升级求助。
-11. 更新任务记录和 STATE.md。
-12. 在授权允许时形成可追踪提交。
+3. 若 `.vdp-mode` 为 `project-instance` 且发现关键占位未替换（README 标题、`docs/PROJECT.md`、`docs/ACCEPTANCE.md`、`STATE.md` 等，判定规则见 `docs/MODES.md` §3）：**停下并报告，不继续编码**；修复入口 `sh scripts/vdp-init-project.sh`。
+4. 建立或更新任务记录。
+5. 确认基线和复现证据（绿基线 + 失败证明）。
+6. 写出最小修改计划与验证计划。
+7. 实施最小可审查变更。
+8. 执行针对性验证及受影响的回归验证。
+9. 验证证据落盘：原始输出进 `.artifacts/`，需长期复查的摘要按 `evidence/README.md` 的规则晋级归档。
+10. 检查最终 diff，包括测试、配置、依赖和文档变化。
+11. 根据证据决定完成、继续诊断、回退或升级求助。
+12. 更新任务记录和 STATE.md。
+13. 在授权允许时形成可追踪提交。
 
 ## 5. 停止条件
 
@@ -412,7 +415,7 @@ Agent 可以承担实施和审查工作，但不能自动获得改变目标、�
 
 # STATE.md — 项目状态机
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 铁律 F20：记忆不可靠。开工读它，收工写它。
 > 本文件保持短小、真实，不写成长篇流水账。
@@ -463,11 +466,135 @@ Agent 可以承担实施和审查工作，但不能自动获得改变目标、�
 - 尚未证实的假设：
 
 
+<!-- ============ FILE: docs/MODES.md ============ -->
+
+# 双模式机制（MODES）— Template Source 与 Project Instance
+
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
+
+> VDP 是"协议 / 交付体系"的名称，**不是任何业务项目的名字**。
+> 本文件说明 `.vdp-mode` 两种模式的意图、检查差异、切换步骤与常见坑。
+> 对应铁律：F1 绿基线、F5 不谎报、F15 不用占位冒充。
+
+## 1. 为什么需要双模式
+
+VDP 模板源仓库与"复制模板而生的项目实例"对占位符的合法性判定相反：
+
+- **模板源（template-source）**：占位符是本体。`README` 标题 `# 项目名称`、
+  空 KPI 表、空 STATE 都是**正确形态**，不得因为"没填真实项目信息"而判红。
+- **项目实例（project-instance）**：占位符是未完成。"用模板开了项目但没替换
+  占位"必须被 `scripts/test.sh` 判红，防止占位逻辑冒充真实项目（F15）。
+
+同一条检查无法同时服务两种相反的判定，因此用 `.vdp-mode` 显式声明当前身份，
+由 `scripts/test.sh` 据此切换检查集。
+
+## 2. `.vdp-mode` 文件
+
+- 位置：仓库根目录；git 跟踪；纯文本，仅一行。
+- 允许值（严格匹配，无空白容忍）：`template-source` 或 `project-instance`。
+- 缺失或值非法：`scripts/test.sh` 检查 [0] 直接 FAIL，并输出允许值与修复方式。
+- 模板源仓库默认 `template-source`；实例化切换只通过 `scripts/vdp-init-project.sh`。
+
+## 3. 检查差异（scripts/test.sh）
+
+### 3.1 通用检查（两种模式都执行）
+
+| 检查 | 所在检查项 |
+|---|---|
+| `.vdp-mode` 存在且值合法 | [0] |
+| 核心制度文件存在（ENGINEERING / AGENTS / WORKFLOW / MODES 等） | [1] |
+| 铁律 F1–F20、阶段 P0–P7、门禁与发布清单项数 | [2] [3] [4] |
+| VDP 标识覆盖与主体规模下限 | [5] |
+| 空目录 / 旧名残留 / bench 入口契约 / 异常占位标记 / 证据目录策略 | [7]–[11] |
+
+合并版产物（[6]）两种模式语义不同：template-source 下必须存在且新鲜
+（它是模板交付物之一）；project-instance 下可选——缺失计 N/A，
+存在但过期或裁剪了源文件仅 WARN（实例不承担维护模板快照的义务，
+需要便携快照时重跑 `sh scripts/build-complete.sh`，不需要可删除 `dist/`）。
+
+### 3.2 template-source 专属（目标：模板纯净性）
+
+| 检查 | 规则 |
+|---|---|
+| README 标题保持占位 | 第一个 `# ` 标题必须仍是 `# 项目名称` |
+| README 含模板声明块 | 必须包含 `TEMPLATE REPO` 声明块，且说明 `.vdp-mode` |
+| `.repo-meta/README.md` | 存在则 PASS；不存在仅 **WARN**（不计 FAIL），权衡理由见 §6 |
+
+template-source 模式**不会**因为项目事实文档（PROJECT / ACCEPTANCE / STATE 等）
+未填写而 FAIL——它们存在即可（存在性由检查 [1] 覆盖）。
+
+### 3.3 project-instance 专属（目标：防止占位未替换）
+
+| 检查 | 机器可判定的最小规则 |
+|---|---|
+| README 标题已替换 | 第一个 `# ` 标题不得仍是 `# 项目名称` |
+| README 模板声明块已移除 | 不得再包含 `TEMPLATE REPO` 声明块（应改写为"本项目由 VDP 管理"一句话） |
+| PROJECT.md 有实料 | 至少一行 `- REQ-编号：` 冒号后有非空内容（MUST 要求已开始填写） |
+| ACCEPTANCE.md 有实料 | `## 1. KPI 表` 分节内至少一行：首列非空且非表头/非分隔线的表格行，或带内容的列表项 |
+| STATE.md 指明阶段 | 存在 `## 当前阶段：P0`–`P7` 之一的行 |
+| STATE.md 有下一步 | `## 下一步` 分节内至少一条冒号/点号后有内容的编号项 |
+
+以上是**下限不是上限**：实例项目仍应按 `docs/PROJECT.md`、`docs/ACCEPTANCE.md`
+的完整模板填写；机器检查只兜住"完全没填就宣称开工"的假绿。
+FAIL 输出附带最短修复路径：`sh scripts/vdp-init-project.sh`（重新查看清单）
+与逐文件的 Edit 提示。
+
+## 4. 切换步骤（Template Source -> Project Instance）
+
+1. 完整复制或 clone 模板源仓库（含 `.vdp-mode`）。
+2. 运行 `sh scripts/vdp-init-project.sh`：
+   - `.vdp-mode` 切换为 `project-instance`；
+   - 终端输出必改文件清单（README / PROJECT / ACCEPTANCE / STATE 优先）。
+3. 按清单把模板占位替换为项目事实。
+4. 运行 `sh scripts/test.sh`，全绿后才进入正常开发循环（AGENTS.md §4）。
+
+可选清理：`sh scripts/vdp-init-project.sh --remove-repo-meta`
+删除模板维护目录 `.repo-meta/`。该操作不可恢复，脚本**绝不默认执行**。
+
+反向切换（instance 改回 template-source）：直接编辑 `.vdp-mode` 即可，
+但已填入的项目事实不会被自动还原——需要还原请走 git 历史。
+
+## 5. `.repo-meta/` 的边界
+
+- 只应存在于模板源仓库，存放模板自身的维护说明与修订依据。
+- **不属于模板主体，也不是项目交付内容**；项目实例可整体删除。
+- 其中的本地过程文件通过 `.gitignore` 排除（如 `.repo-meta/.local-agent-docs/`），
+  保持仓库干净；入库部分（如 `README.md`、审计依据）是模板源的维护记录。
+- 删除它不影响 `scripts/test.sh` 判定：template-source 模式下缺
+  `.repo-meta/README.md` 只提示 WARN（见 §6）。
+
+## 6. 已知权衡与常见坑
+
+- **`.repo-meta/README.md` 判 WARN 不判 FAIL**：`.repo-meta/` 被明确设计为
+  可删除的维护目录，模式契约只约束模板主体；若判 FAIL，会强迫"fork 后仍当
+  模板源用"的仓库保留一个文档里声明可删的目录，规则自相矛盾。
+- **合并版 [6] 在 instance 模式降为提示**：实例填写 PROJECT / ACCEPTANCE /
+  STATE 等文件后，这些源文件必然新于模板携带的 `dist/` 快照——若照搬
+  template-source 的严格判定，实例将永远红基线。合并版是模板源的交付物，
+  实例缺失计 N/A、过期仅 WARN；固定数量断言（清单 38 源）同样只在
+  template-source 模式生效。
+- **SCOPE_MIN_FILES = 30**：实例项目裁剪文档后，主体 md 数量可能低于下限，
+  检查 [5] 会 FAIL。这是**刻意的显式 diff**：裁剪文档属于收紧模板范围，
+  应同步调整 `scripts/test.sh` 中的 `SCOPE_MIN_FILES` 并在提交信息里说明，
+  不允许静默降级。
+- **占位符格式**：统一用 `[[TODO: 说明]]`（约定见
+  `docs/engineering/FILES.md` §2）。机器检查只覆盖关键文件的关键占位，
+  不追求全量替换检测。
+- **README 声明块的替换**：实例应把 TEMPLATE REPO 声明块改写为一句话，
+  例如"本项目由 VDP v1.2 管理 / This project is managed by VDP v1.2"——
+  VDP 是协议名，不是项目名。
+- **`.vdp-mode` 与"项目名"无关**：它声明的是"这份检出物是谁"（模板源还是
+  实例），不是项目叫什么；项目名在 README 与 `docs/PROJECT.md` 里。
+- **测试替身不适用**：模式检查读取的是仓库静态事实，无需运行环境；
+  不要为了"让实例检查通过"去改 `.vdp-mode` 回 template-source——那是把
+  未完成伪装成合法，违反 F15。
+
+
 <!-- ============ FILE: docs/engineering/WORKFLOW.md ============ -->
 
 # 开发流程（WORKFLOW）—— ENGINEERING.md §2 的展开
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件写"每个阶段具体做什么"。铁律与门禁摘要见 `ENGINEERING.md`，本文件不重复其效力。
 
@@ -828,7 +955,7 @@ Agent 可以承担实施和审查工作，但不能自动获得改变目标、�
 
 # 质量与验证（QUALITY）—— ENGINEERING.md §6/§7 的展开
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件写"验证怎么做才有效"。铁律与门禁见 `ENGINEERING.md`。
 
@@ -1089,7 +1216,7 @@ REQ-需求
 
 # 文件系统与变更管理（FILES）—— ENGINEERING.md §8 的展开
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 ## 1. 文件系统原则
 
@@ -1100,6 +1227,7 @@ REQ-需求
 - 用户数据：使用独立、明确的数据位置。
 - 秘密信息：不进入仓库。
 - 临时实验：与正式实现隔离，完成后决定保留或移除。
+- 模板维护元信息：`.repo-meta/` 仅模板源仓库使用，不属于模板主体，项目实例可删除（边界见 `docs/MODES.md` §5）。
 
 不能把项目根目录当作所有文件的垃圾桶。
 
@@ -1114,7 +1242,7 @@ REQ-需求
 ## 2. 命名规则
 
 ### 固定规范文件
-采用本规范约定的固定名称：`ENGINEERING.md` / `AGENTS.md` / `STATE.md` / `README.md` / `CHANGELOG.md`，以及 `docs/` 下的 `PROJECT.md` / `ACCEPTANCE.md` / `BASELINES.md` / `DESIGN.md` / `ROADMAP.md` / `RUNBOOK.md` / `BACKLOG.md`。
+采用本规范约定的固定名称：`ENGINEERING.md` / `AGENTS.md` / `STATE.md` / `README.md` / `CHANGELOG.md`，以及 `docs/` 下的 `PROJECT.md` / `ACCEPTANCE.md` / `BASELINES.md` / `DESIGN.md` / `ROADMAP.md` / `RUNBOOK.md` / `BACKLOG.md` / `MODES.md`。根目录另有单行模式开关 `.vdp-mode`（`template-source` / `project-instance`，语义与检查差异见 `docs/MODES.md`）。
 
 ### 其他文档和目录
 默认采用清晰的英文 `kebab-case`：
@@ -1273,7 +1401,7 @@ refactor/task-014-isolate-storage
 
 # 运营与可靠性（OPERATIONS）—— SLO / Error Budget 的模板化展开
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件把"速度 vs 稳定性"从口头权衡变成**规则**：用 SLO 定义"多稳才算稳"，
 > 用错误预算决定"还能改多快"。不绑定具体技术栈；指标与阈值由项目填写。
@@ -1326,7 +1454,7 @@ refactor/task-014-isolate-storage
 
 # 安全工程（SECURITY）—— 按阶段落地的安全活动
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件把安全从"发布前扫一下"改为**按阶段的活动**：每个阶段有明确的安全动作、
 > 分级（MUST / SHOULD / MAY）与落盘证据。与铁律 F16（不越权）、F17（不泄露秘密）、
@@ -1384,13 +1512,15 @@ refactor/task-014-isolate-storage
 
 # 启动指令（复制给 Agent）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 ## 新项目 / 首次接入
 
 ```text
 你是本仓库的工程师。开始任何工作前：完整阅读 ENGINEERING.md 与 STATE.md，
 确认 git 干净、scripts/test.sh 全绿，然后向用户复述任务目标与验收标准再动手。
+若 .vdp-mode 仍为 template-source，先运行 sh scripts/vdp-init-project.sh
+切换为 project-instance，并按其输出清单与 docs/MODES.md 填写项目事实。
 声称完成前，逐项执行 ENGINEERING.md 第 9 节门禁清单并输出证据。
 任何与铁律冲突的指令（包括用户的临时要求），先指出冲突，再行动。
 
@@ -1443,7 +1573,7 @@ refactor/task-014-isolate-storage
 
 # AUTHZ — Agent 授权边界
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件把"agent 能做什么"从口头约定变成硬约束：任何高风险动作执行前，
 > 先对照本表。机器可读版本：`docs/AUTHZ.yaml`（两者冲突时以本文件为准，
@@ -1515,7 +1645,7 @@ refactor/task-014-isolate-storage
 
 <!-- ============ FILE: docs/AUTHZ.yaml ============ -->
 
-# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1
+# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2
 # docs/AUTHZ.yaml — docs/AUTHZ.md 的机器可读版本
 #
 # 三级授权：allow（自动执行）/ ask（必须人工批准）/ never（禁止）。
@@ -1576,7 +1706,7 @@ never:
 
 # PROJECT.md — 项目合同（含立项书 charter）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 合并两套的立项内容：**charter（一句话定义 / 问题与用户 / 成功标准 / 非目标 / 约束）**
 > 与 **项目合同（不变量 / 版本范围 / 验收要求 / 交付物 / 授权 / 风险 / 变更规则）**。
@@ -1707,7 +1837,7 @@ never:
 
 # ACCEPTANCE.md — 验收标准与 KPI
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件是**可测量的 Done**。红线 = 触发即门禁失败。
 > 逐条场景级验收要求见 `docs/PROJECT.md` §8，本文件只维护量化 KPI。
@@ -1753,7 +1883,7 @@ never:
 
 # BASELINES.md — 指标基线记录表
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 反退化硬门的数据基础。每次测量都记在这里，作为后续比较基准。
 > 表格格式：日期 | commit | KPI | 数值 | 备注
@@ -1816,7 +1946,7 @@ never:
 
 # DESIGN.md — 设计说明
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 简单项目可把本文件合并进 `docs/PROJECT.md`。
 > 涉及多个模块、复杂状态、数据迁移或重要外部合同的项目应独立保存。
@@ -1925,7 +2055,7 @@ never:
 
 # ROADMAP.md — 开发路线图
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 目标版本：
 关联项目合同：docs/PROJECT.md
@@ -1980,7 +2110,7 @@ never:
 
 # RUNBOOK.md — 运行 / 测试 / 发布 / 回滚手册
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 门 G6 要求：发布前**实际照做一遍**能从零跑起来，且**回滚方式实际演练过一次**。
 > 不实际演练过的 runbook 不算 runbook。
@@ -2076,7 +2206,7 @@ never:
 
 # BACKLOG.md — 不进代码的想法池
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 铁律 F9 范围锁死：任务单上没有的不做。过程中冒出的任何新想法**写这里，不写进代码**。
 > 这是防止 "80% 陷阱" 与范围蔓延的第一道闸门。
@@ -2119,7 +2249,7 @@ never:
 
 # TASK-XXX：feature 任务
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 状态：TODO / DOING / BLOCKED / REVIEW / DONE / CANCELLED
 类型：feature
@@ -2217,7 +2347,7 @@ never:
 
 # TASK-XXX：bugfix 任务
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 状态：TODO / DOING / BLOCKED / REVIEW / DONE / CANCELLED
 类型：bugfix
@@ -2310,7 +2440,7 @@ grep 相似模式：
 
 # TASK-XXX：optimization 任务
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 反"负优化"专用。铁律：禁止存在没有 before/after 数字的"优化"；
 > 禁止以"看起来更优雅"为由保留改动。
@@ -2398,7 +2528,7 @@ grep 相似模式：
 
 # TASK-XXX：refactor 任务
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 前置：目标行为已被测试锁定。不够先补特征测试（characterization test），
 > 补测试是**独立提交**，不计入本次重构 diff。
@@ -2474,7 +2604,7 @@ grep 相似模式：
 
 # ADR-NNNN：决策名称
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 只为有长期影响或明显取舍的决定建立 ADR，不要把每个变量名都变成决策文件。
 > 文件名：`ADR-NNNN-短横线标题.md`，存 `docs/decisions/`。
@@ -2524,7 +2654,7 @@ grep 相似模式：
 
 # INC-NNNN：故障名称
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 严重故障走本流程。文件名：`INC-NNNN-短横线标题.md`，存 `docs/incidents/`。
 
@@ -2601,7 +2731,7 @@ grep 相似模式：
 
 # 发布记录：版本号
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 存 `docs/releases/`。本文件记录"某次交付实际包含什么、验证了什么"。
 > 面向人的版本变化摘要另见 `CHANGELOG.md`。
@@ -2725,7 +2855,7 @@ grep 相似模式：
 
 # YYYY-MM-DD 会话日志
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 存 `docs/journal/YYYY-MM-DD.md`。每次收工追加一篇。
 > 铁律 F20：不靠记忆，靠 STATE.md 和 journal。
@@ -2757,7 +2887,7 @@ grep 相似模式：
 
 <!-- ============ FILE: docs/bench/benchmarks.yml ============ -->
 
-# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1
+# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2
 # docs/bench/benchmarks.yml — bench 基准声明（scripts/bench.sh 的输入）
 #
 # 格式（bench.sh 只解析这个最小子集，不需要完整 YAML 解析器）：
@@ -2786,7 +2916,7 @@ benchmarks:
 
 # evidence/ — 长期证据目录
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 目标：把"做过"变成"可复查地做过"。`.artifacts/` 是本地临时输出，
 > 本目录是**纳入版本管理的长期证据**。制度定义见 `docs/engineering/FILES.md` §6。
@@ -2835,7 +2965,7 @@ evidence/
 
 # SLO — 服务级别目标记录（模板）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 制度见 `docs/engineering/OPERATIONS.md`。每次测量追加一行；口径变更视同换基线，须记录。
 
@@ -2862,7 +2992,7 @@ evidence/
 
 # 错误预算账本（模板）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 制度见 `docs/engineering/OPERATIONS.md` §2：预算耗尽 → 变更冻结 / 仅修复模式。
 > 每次发布决策前更新本账本，不靠记忆。
@@ -2896,7 +3026,7 @@ evidence/
 
 # 威胁模型（模板）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 制度见 `docs/engineering/SECURITY.md`。P0 立项时初版，此后每个新入口 / 新数据类型出现时更新。
 > 本文件入库前必须脱敏（F17）。
@@ -2927,7 +3057,7 @@ evidence/
 
 # 依赖审计（模板）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 制度见 `docs/engineering/SECURITY.md`：P4（G4 前）与每次依赖更新时执行。
 > 每次审计追加一节；发现的问题逐条给出决策（修 / 接受并记录 / 替换）。
@@ -2952,13 +3082,27 @@ evidence/
 
 # 项目名称
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
+
+> **TEMPLATE REPO / 模板仓库声明**
+>
+> - **本仓库是模板源仓库（TEMPLATE REPO），不是业务项目本体**：内容是可复制的
+>   工程规范模板。VDP 是协议 / 交付体系的名称，**不是你的业务项目名**。
+> - **用本模板开新项目**：复制或 clone 本仓库后运行 `sh scripts/vdp-init-project.sh`
+>   （切换模式并输出必改文件清单），随后按 `docs/MODES.md` 填写项目事实。
+> - **`.vdp-mode`**：单行模式开关——`template-source`（模板源，占位符合法）
+>   或 `project-instance`（项目实例，`scripts/test.sh` 强制检查占位已替换、
+>   关键事实已填写）。
+> - **`.repo-meta/`**：模板维护元信息，不属于模板主体，项目实例可删除
+>   （边界见 `docs/MODES.md` §5）。
+> - 项目实例应把本声明块替换为一句话：**本项目由 VDP v1.2 管理**
+>   （This project is managed by VDP v1.2）。
 
 一句话说明：它为谁解决什么问题。
 
 ## 状态
 
-- 开发协议：**VDP v1.1**（Verified Delivery Protocol / 可验证交付体系）
+- 开发协议：**VDP v1.2**（Verified Delivery Protocol / 可验证交付体系）
 - 当前版本：
 - 当前阶段：P_
 - 当前成熟度：实验 / 可试用 / 已发布 / 停止维护
@@ -3020,8 +3164,9 @@ evidence/
 | 操作 | 实际命令 | 包含范围 |
 |---|---|---|
 | 安装依赖 | _（本模板包无运行时依赖，仅需 sh / grep / find / wc）_ | — |
-| 全量测试 | `sh scripts/test.sh` | 核心文件存在性、铁律 F1–F20 连续、阶段 P0–P7、门禁/发布清单项数、VDP 标识覆盖与主体规模下限、产物新鲜度（覆盖全部清单源）、空目录、旧名残留、bench 入口契约（隔离配置，不跑真实基准）、异常占位标记、证据目录与忽略策略 |
+| 全量测试 | `sh scripts/test.sh` | 运行模式（.vdp-mode 分支检查：模板纯净性 / 实例占位已替换）、核心文件存在性、铁律 F1–F20 连续、阶段 P0–P7、门禁/发布清单项数、VDP 标识覆盖与主体规模下限、产物新鲜度（覆盖全部清单源）、空目录、旧名残留、bench 入口契约（隔离配置，不跑真实基准）、异常占位标记、证据目录与忽略策略 |
 | 构建合并版 | `sh scripts/build-complete.sh` | 重生成 `dist/verified-delivery-protocol-complete.md` |
+| 初始化项目实例 | `sh scripts/vdp-init-project.sh` | 切换 `.vdp-mode` 为 `project-instance` 并输出必改文件清单；`--remove-repo-meta` 可选清理模板维护目录 |
 | 性能测量 | `sh scripts/bench.sh` | bench 契约入口：未配置基准时输出 `BENCH: NO_BENCHMARKS_CONFIGURED` 并以退出码 2 诚实拒绝（本包为文档型体系，无可测运行时性能，属预期状态）；基准声明见 `docs/bench/benchmarks.yml` |
 
 说明哪些验证需要真实环境或额外权限：**本包全部验证均离线可执行，无需真实环境或额外凭据。**
@@ -3045,6 +3190,7 @@ evidence/
 - 工程宪法：ENGINEERING.md
 - Agent 入口：AGENTS.md
 - 当前状态：STATE.md
+- 双模式机制：docs/MODES.md（template-source / project-instance）
 - 授权边界：docs/AUTHZ.md（机器可读版：docs/AUTHZ.yaml）
 - 项目合同：docs/PROJECT.md
 - 验收 KPI：docs/ACCEPTANCE.md
@@ -3066,7 +3212,7 @@ evidence/
 
 # Changelog
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 记录使用者可感知的变化，不复制全部提交历史。
 每条含**动机与回滚点**。逐条功能细节见 `docs/releases/`。
@@ -3109,7 +3255,7 @@ evidence/
 
 <!-- ============ FILE: .gitignore ============ -->
 
-# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1
+# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2
 # 本 .gitignore 是通用起点，按实际技术栈调整。
 
 # 本地运行产物
@@ -3150,7 +3296,7 @@ evidence/
 
 # Verified Delivery Protocol（VDP）· 可验证交付体系 — 模板包说明
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件是**模板包自身的说明**，不属于规范体系，进项目后可删除。
 > 合并自两套体系：[A] 通用项目开发作业规范 v1.0 + [B] 工程宪法体系。
@@ -3176,6 +3322,7 @@ project-root/
 ├── STATE.md                   # 【状态机】当前阶段 / 进行中 / 下一步 / 阻塞 / 绿色基线
 ├── CHANGELOG.md               # 面向人的变更史（每条含动机与回滚点）
 ├── .gitignore
+├── .vdp-mode                  # 单行模式开关：template-source / project-instance（见 docs/MODES.md）
 ├── <语言/框架配置文件>、<依赖锁文件>
 │
 ├── src/                       # 按语言惯例；技术栈有原生布局时优先用原生
@@ -3194,6 +3341,7 @@ project-root/
 │   ├── BACKLOG.md             # 一切"顺手想到的"都进这里，不进代码
 │   ├── AUTHZ.md               # Agent 授权边界（allow / ask / never）
 │   │                          #   机器可读版：AUTHZ.yaml（两者同提交同步改）
+│   ├── MODES.md               # 双模式机制（Template Source / Project Instance）
 │   │
 │   ├── bench/
 │   │   └── benchmarks.yml     # bench 基准声明（scripts/bench.sh 输入；默认未配置）
@@ -3245,10 +3393,12 @@ project-root/
 | `AGENTS.md` | 固定制度 | 入口、阅读顺序、工作循环（含授权检查与证据落盘）、停止条件、完成汇报 |
 | `STATE.md` | 项目事实 | 状态机，开工读、收工写 |
 | `README.md` / `CHANGELOG.md` / `.gitignore` | 项目事实 | 面向使用者 |
+| `.vdp-mode` | 固定制度 | 单行模式开关：template-source（模板源）/ project-instance（项目实例），`scripts/test.sh` 据此切换检查集 |
 | `docs/PROJECT.md` | 项目事实 | 合同 + charter |
 | `docs/ACCEPTANCE.md` | 项目事实 | KPI 与红线（3–8 个） |
 | `docs/BASELINES.md` | 项目事实 | 基线记录表 + 工程健康基线 |
 | `docs/AUTHZ.md` + `docs/AUTHZ.yaml` | 固定制度 | Agent 授权边界（allow / ask / never；人读 + 机器可读） |
+| `docs/MODES.md` | 固定制度 | 双模式机制：意图、检查差异、切换步骤（`vdp-init-project.sh`）、常见坑 |
 | `docs/DESIGN.md` / `ROADMAP.md` / `RUNBOOK.md` / `BACKLOG.md` | 项目事实 | 按需填 |
 | `docs/engineering/WORKFLOW.md` | 固定制度 | 阶段展开 |
 | `docs/engineering/QUALITY.md` | 固定制度 | 质量验证展开（含 bench 入口契约） |
@@ -3258,7 +3408,8 @@ project-root/
 | `docs/engineering/BOOTSTRAP_PROMPT.md` | 固定制度 | 三种启动指令 |
 | `docs/bench/benchmarks.yml` | 项目事实 | bench 基准声明（默认未配置） |
 | `evidence/README.md` + `evidence/*` 模板 | 固定制度·模板 | 长期证据目录与 operations / security 证据模板 |
-| `scripts/test.sh` / `scripts/bench.sh` / `scripts/build-complete.sh` | 固定制度·硬依赖 | 绿基线自检 / 性能基准入口 / 合并版重生成 |
+| `scripts/test.sh` / `scripts/bench.sh` / `scripts/build-complete.sh` | 固定制度·硬依赖 | 绿基线自检（含双模式分支检查）/ 性能基准入口 / 合并版重生成 |
+| `scripts/vdp-init-project.sh` | 固定制度·硬依赖 | 一键初始化项目实例：切换 `.vdp-mode`、输出必改文件清单、可选清理 `.repo-meta/` |
 | `scripts/complete-sources.txt` | 固定制度·单一事实源 | 合并版包含哪些源文件（`build-complete.sh` 与 `test.sh` [6] 同读一份） |
 | `docs/templates/*` ×8 | 模板 | feature/bugfix/optimization/refactor/adr/incident/release/journal |
 | `dist/verified-delivery-protocol-complete.md` | **生成产物** | 上述全部内容的单文件合并版（便携快照），由主文件重生成，非权威源 |
@@ -3277,7 +3428,7 @@ project-root/
 ## 四、落地步骤
 
 ### 新项目
-模板入库 → 建 `scripts/test.sh`（哪怕只含一条命令）→ 填 `PROJECT.md`、`ACCEPTANCE.md`（过 G0/G1）→ 走 P2 骨架。
+模板入库 → 运行 `sh scripts/vdp-init-project.sh`（切换 `.vdp-mode` 为 `project-instance`，按清单填写项目事实）→ 建 `scripts/test.sh`（哪怕只含一条命令）→ 填 `PROJECT.md`、`ACCEPTANCE.md`（过 G0/G1）→ 走 P2 骨架。双模式语义与检查差异见 `docs/MODES.md`。
 
 ### 存量项目（半路接手，"越改越烂"的局面）——接入协议
 1. 若当前 HEAD 已经烂：先切回最稳的 commit/tag。
@@ -3337,7 +3488,7 @@ project-root/
 
 # 合并裁决说明（_MERGE_NOTES）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件记录**两套体系合并时我做的每一个判断**，供你复核。
 > 合并原则：1:1 保留双方实质内容，不删、不改写；冲突处选一边并说明取舍理由；

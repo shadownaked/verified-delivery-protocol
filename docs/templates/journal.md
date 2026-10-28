@@ -1,6 +1,6 @@
 # YYYY-MM-DD 会话日志
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 存 `docs/journal/YYYY-MM-DD.md`。每次收工追加一篇。
 > 铁律 F20：不靠记忆，靠 STATE.md 和 journal。

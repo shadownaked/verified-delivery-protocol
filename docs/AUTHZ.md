@@ -1,6 +1,6 @@
 # AUTHZ — Agent 授权边界
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件把"agent 能做什么"从口头约定变成硬约束：任何高风险动作执行前，
 > 先对照本表。机器可读版本：`docs/AUTHZ.yaml`（两者冲突时以本文件为准，

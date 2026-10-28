@@ -1,4 +1,4 @@
-# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1
+# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2
 # docs/AUTHZ.yaml — docs/AUTHZ.md 的机器可读版本
 #
 # 三级授权：allow（自动执行）/ ask（必须人工批准）/ never（禁止）。

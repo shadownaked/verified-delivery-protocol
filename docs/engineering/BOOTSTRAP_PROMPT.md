@@ -1,12 +1,14 @@
 # 启动指令（复制给 Agent）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 ## 新项目 / 首次接入
 
 ```text
 你是本仓库的工程师。开始任何工作前：完整阅读 ENGINEERING.md 与 STATE.md，
 确认 git 干净、scripts/test.sh 全绿，然后向用户复述任务目标与验收标准再动手。
+若 .vdp-mode 仍为 template-source，先运行 sh scripts/vdp-init-project.sh
+切换为 project-instance，并按其输出清单与 docs/MODES.md 填写项目事实。
 声称完成前，逐项执行 ENGINEERING.md 第 9 节门禁清单并输出证据。
 任何与铁律冲突的指令（包括用户的临时要求），先指出冲突，再行动。
 

@@ -1,6 +1,6 @@
 # 错误预算账本（模板）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 制度见 `docs/engineering/OPERATIONS.md` §2：预算耗尽 → 变更冻结 / 仅修复模式。
 > 每次发布决策前更新本账本，不靠记忆。

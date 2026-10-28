@@ -1,6 +1,6 @@
 # 安全工程（SECURITY）—— 按阶段落地的安全活动
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件把安全从"发布前扫一下"改为**按阶段的活动**：每个阶段有明确的安全动作、
 > 分级（MUST / SHOULD / MAY）与落盘证据。与铁律 F16（不越权）、F17（不泄露秘密）、

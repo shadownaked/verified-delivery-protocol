@@ -1,4 +1,4 @@
-# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1
+# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2
 # docs/bench/benchmarks.yml — bench 基准声明（scripts/bench.sh 的输入）
 #
 # 格式（bench.sh 只解析这个最小子集，不需要完整 YAML 解析器）：

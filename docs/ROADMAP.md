@@ -1,6 +1,6 @@
 # ROADMAP.md — 开发路线图
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 目标版本：
 关联项目合同：docs/PROJECT.md

@@ -1,6 +1,6 @@
 # evidence/ — 长期证据目录
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 目标：把"做过"变成"可复查地做过"。`.artifacts/` 是本地临时输出，
 > 本目录是**纳入版本管理的长期证据**。制度定义见 `docs/engineering/FILES.md` §6。

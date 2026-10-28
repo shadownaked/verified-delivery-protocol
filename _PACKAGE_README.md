@@ -1,6 +1,6 @@
 # Verified Delivery Protocol（VDP）· 可验证交付体系 — 模板包说明
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件是**模板包自身的说明**，不属于规范体系，进项目后可删除。
 > 合并自两套体系：[A] 通用项目开发作业规范 v1.0 + [B] 工程宪法体系。
@@ -26,6 +26,7 @@ project-root/
 ├── STATE.md                   # 【状态机】当前阶段 / 进行中 / 下一步 / 阻塞 / 绿色基线
 ├── CHANGELOG.md               # 面向人的变更史（每条含动机与回滚点）
 ├── .gitignore
+├── .vdp-mode                  # 单行模式开关：template-source / project-instance（见 docs/MODES.md）
 ├── <语言/框架配置文件>、<依赖锁文件>
 │
 ├── src/                       # 按语言惯例；技术栈有原生布局时优先用原生
@@ -44,6 +45,7 @@ project-root/
 │   ├── BACKLOG.md             # 一切"顺手想到的"都进这里，不进代码
 │   ├── AUTHZ.md               # Agent 授权边界（allow / ask / never）
 │   │                          #   机器可读版：AUTHZ.yaml（两者同提交同步改）
+│   ├── MODES.md               # 双模式机制（Template Source / Project Instance）
 │   │
 │   ├── bench/
 │   │   └── benchmarks.yml     # bench 基准声明（scripts/bench.sh 输入；默认未配置）
@@ -95,10 +97,12 @@ project-root/
 | `AGENTS.md` | 固定制度 | 入口、阅读顺序、工作循环（含授权检查与证据落盘）、停止条件、完成汇报 |
 | `STATE.md` | 项目事实 | 状态机，开工读、收工写 |
 | `README.md` / `CHANGELOG.md` / `.gitignore` | 项目事实 | 面向使用者 |
+| `.vdp-mode` | 固定制度 | 单行模式开关：template-source（模板源）/ project-instance（项目实例），`scripts/test.sh` 据此切换检查集 |
 | `docs/PROJECT.md` | 项目事实 | 合同 + charter |
 | `docs/ACCEPTANCE.md` | 项目事实 | KPI 与红线（3–8 个） |
 | `docs/BASELINES.md` | 项目事实 | 基线记录表 + 工程健康基线 |
 | `docs/AUTHZ.md` + `docs/AUTHZ.yaml` | 固定制度 | Agent 授权边界（allow / ask / never；人读 + 机器可读） |
+| `docs/MODES.md` | 固定制度 | 双模式机制：意图、检查差异、切换步骤（`vdp-init-project.sh`）、常见坑 |
 | `docs/DESIGN.md` / `ROADMAP.md` / `RUNBOOK.md` / `BACKLOG.md` | 项目事实 | 按需填 |
 | `docs/engineering/WORKFLOW.md` | 固定制度 | 阶段展开 |
 | `docs/engineering/QUALITY.md` | 固定制度 | 质量验证展开（含 bench 入口契约） |
@@ -108,7 +112,8 @@ project-root/
 | `docs/engineering/BOOTSTRAP_PROMPT.md` | 固定制度 | 三种启动指令 |
 | `docs/bench/benchmarks.yml` | 项目事实 | bench 基准声明（默认未配置） |
 | `evidence/README.md` + `evidence/*` 模板 | 固定制度·模板 | 长期证据目录与 operations / security 证据模板 |
-| `scripts/test.sh` / `scripts/bench.sh` / `scripts/build-complete.sh` | 固定制度·硬依赖 | 绿基线自检 / 性能基准入口 / 合并版重生成 |
+| `scripts/test.sh` / `scripts/bench.sh` / `scripts/build-complete.sh` | 固定制度·硬依赖 | 绿基线自检（含双模式分支检查）/ 性能基准入口 / 合并版重生成 |
+| `scripts/vdp-init-project.sh` | 固定制度·硬依赖 | 一键初始化项目实例：切换 `.vdp-mode`、输出必改文件清单、可选清理 `.repo-meta/` |
 | `scripts/complete-sources.txt` | 固定制度·单一事实源 | 合并版包含哪些源文件（`build-complete.sh` 与 `test.sh` [6] 同读一份） |
 | `docs/templates/*` ×8 | 模板 | feature/bugfix/optimization/refactor/adr/incident/release/journal |
 | `dist/verified-delivery-protocol-complete.md` | **生成产物** | 上述全部内容的单文件合并版（便携快照），由主文件重生成，非权威源 |
@@ -127,7 +132,7 @@ project-root/
 ## 四、落地步骤
 
 ### 新项目
-模板入库 → 建 `scripts/test.sh`（哪怕只含一条命令）→ 填 `PROJECT.md`、`ACCEPTANCE.md`（过 G0/G1）→ 走 P2 骨架。
+模板入库 → 运行 `sh scripts/vdp-init-project.sh`（切换 `.vdp-mode` 为 `project-instance`，按清单填写项目事实）→ 建 `scripts/test.sh`（哪怕只含一条命令）→ 填 `PROJECT.md`、`ACCEPTANCE.md`（过 G0/G1）→ 走 P2 骨架。双模式语义与检查差异见 `docs/MODES.md`。
 
 ### 存量项目（半路接手，"越改越烂"的局面）——接入协议
 1. 若当前 HEAD 已经烂：先切回最稳的 commit/tag。

@@ -39,7 +39,7 @@ mkdir -p dist
 
 # 头部：声明性质、权威源、重生成方式
 cat > "$OUT" <<'HEADER'
-# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1
+# Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2
 ## 完整合并版（便携快照）
 
 > **本文件是生成产物，不是权威源。**
@@ -58,18 +58,19 @@ cat > "$OUT" <<'HEADER'
 1. `ENGINEERING.md` — 工程宪法（铁律 F1–F20、P0–P7、四类流程、门禁）**每次开工必读**
 2. `AGENTS.md` — Agent 入口与阅读顺序
 3. `STATE.md` — 项目状态机
-4. `docs/engineering/WORKFLOW.md` — 阶段展开
-5. `docs/engineering/QUALITY.md` — 质量与验证（含 bench 入口契约）
-6. `docs/engineering/FILES.md` — 文件系统与命名（含双层证据制度）
-7. `docs/engineering/OPERATIONS.md` — 运营与可靠性（SLI / SLO / Error Budget）
-8. `docs/engineering/SECURITY.md` — 安全工程（阶段化安全活动）
-9. `docs/engineering/BOOTSTRAP_PROMPT.md` — 三种启动指令
-10. `docs/AUTHZ.md` + `docs/AUTHZ.yaml` — Agent 授权边界（人读 + 机器可读）
-11. `docs/PROJECT.md` → `BACKLOG.md` — 项目事实文件与模板
-12. `docs/bench/benchmarks.yml` — bench 基准声明
-13. `evidence/README.md` + `evidence/*` — 长期证据目录约定与模板
-14. `README.md` / `CHANGELOG.md` / `.gitignore`
-15. `_PACKAGE_README.md` / `_MERGE_NOTES.md` — 包说明与合并裁决
+4. `docs/MODES.md` — 双模式机制（Template Source / Project Instance）
+5. `docs/engineering/WORKFLOW.md` — 阶段展开
+6. `docs/engineering/QUALITY.md` — 质量与验证（含 bench 入口契约）
+7. `docs/engineering/FILES.md` — 文件系统与命名（含双层证据制度）
+8. `docs/engineering/OPERATIONS.md` — 运营与可靠性（SLI / SLO / Error Budget）
+9. `docs/engineering/SECURITY.md` — 安全工程（阶段化安全活动）
+10. `docs/engineering/BOOTSTRAP_PROMPT.md` — 三种启动指令
+11. `docs/AUTHZ.md` + `docs/AUTHZ.yaml` — Agent 授权边界（人读 + 机器可读）
+12. `docs/PROJECT.md` → `BACKLOG.md` — 项目事实文件与模板
+13. `docs/bench/benchmarks.yml` — bench 基准声明
+14. `evidence/README.md` + `evidence/*` — 长期证据目录约定与模板
+15. `README.md` / `CHANGELOG.md` / `.gitignore`
+16. `_PACKAGE_README.md` / `_MERGE_NOTES.md` — 包说明与合并裁决
 
 ---
 HEADER

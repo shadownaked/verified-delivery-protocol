@@ -1,6 +1,6 @@
 # STATE.md — 项目状态机
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 铁律 F20：记忆不可靠。开工读它，收工写它。
 > 本文件保持短小、真实，不写成长篇流水账。

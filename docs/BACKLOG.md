@@ -1,6 +1,6 @@
 # BACKLOG.md — 不进代码的想法池
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 铁律 F9 范围锁死：任务单上没有的不做。过程中冒出的任何新想法**写这里，不写进代码**。
 > 这是防止 "80% 陷阱" 与范围蔓延的第一道闸门。

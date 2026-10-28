@@ -1,12 +1,26 @@
 # 项目名称
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
+
+> **TEMPLATE REPO / 模板仓库声明**
+>
+> - **本仓库是模板源仓库（TEMPLATE REPO），不是业务项目本体**：内容是可复制的
+>   工程规范模板。VDP 是协议 / 交付体系的名称，**不是你的业务项目名**。
+> - **用本模板开新项目**：复制或 clone 本仓库后运行 `sh scripts/vdp-init-project.sh`
+>   （切换模式并输出必改文件清单），随后按 `docs/MODES.md` 填写项目事实。
+> - **`.vdp-mode`**：单行模式开关——`template-source`（模板源，占位符合法）
+>   或 `project-instance`（项目实例，`scripts/test.sh` 强制检查占位已替换、
+>   关键事实已填写）。
+> - **`.repo-meta/`**：模板维护元信息，不属于模板主体，项目实例可删除
+>   （边界见 `docs/MODES.md` §5）。
+> - 项目实例应把本声明块替换为一句话：**本项目由 VDP v1.2 管理**
+>   （This project is managed by VDP v1.2）。
 
 一句话说明：它为谁解决什么问题。
 
 ## 状态
 
-- 开发协议：**VDP v1.1**（Verified Delivery Protocol / 可验证交付体系）
+- 开发协议：**VDP v1.2**（Verified Delivery Protocol / 可验证交付体系）
 - 当前版本：
 - 当前阶段：P_
 - 当前成熟度：实验 / 可试用 / 已发布 / 停止维护
@@ -68,8 +82,9 @@
 | 操作 | 实际命令 | 包含范围 |
 |---|---|---|
 | 安装依赖 | _（本模板包无运行时依赖，仅需 sh / grep / find / wc）_ | — |
-| 全量测试 | `sh scripts/test.sh` | 核心文件存在性、铁律 F1–F20 连续、阶段 P0–P7、门禁/发布清单项数、VDP 标识覆盖与主体规模下限、产物新鲜度（覆盖全部清单源）、空目录、旧名残留、bench 入口契约（隔离配置，不跑真实基准）、异常占位标记、证据目录与忽略策略 |
+| 全量测试 | `sh scripts/test.sh` | 运行模式（.vdp-mode 分支检查：模板纯净性 / 实例占位已替换）、核心文件存在性、铁律 F1–F20 连续、阶段 P0–P7、门禁/发布清单项数、VDP 标识覆盖与主体规模下限、产物新鲜度（覆盖全部清单源）、空目录、旧名残留、bench 入口契约（隔离配置，不跑真实基准）、异常占位标记、证据目录与忽略策略 |
 | 构建合并版 | `sh scripts/build-complete.sh` | 重生成 `dist/verified-delivery-protocol-complete.md` |
+| 初始化项目实例 | `sh scripts/vdp-init-project.sh` | 切换 `.vdp-mode` 为 `project-instance` 并输出必改文件清单；`--remove-repo-meta` 可选清理模板维护目录 |
 | 性能测量 | `sh scripts/bench.sh` | bench 契约入口：未配置基准时输出 `BENCH: NO_BENCHMARKS_CONFIGURED` 并以退出码 2 诚实拒绝（本包为文档型体系，无可测运行时性能，属预期状态）；基准声明见 `docs/bench/benchmarks.yml` |
 
 说明哪些验证需要真实环境或额外权限：**本包全部验证均离线可执行，无需真实环境或额外凭据。**
@@ -93,6 +108,7 @@
 - 工程宪法：ENGINEERING.md
 - Agent 入口：AGENTS.md
 - 当前状态：STATE.md
+- 双模式机制：docs/MODES.md（template-source / project-instance）
 - 授权边界：docs/AUTHZ.md（机器可读版：docs/AUTHZ.yaml）
 - 项目合同：docs/PROJECT.md
 - 验收 KPI：docs/ACCEPTANCE.md

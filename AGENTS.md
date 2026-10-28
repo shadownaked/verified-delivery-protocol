@@ -1,8 +1,8 @@
 # AGENTS.md — 入口与阅读顺序
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
-> 本仓库遵循 **VDP（Verified Delivery Protocol / 可验证交付体系）v1.1**。
+> 本仓库遵循 **VDP（Verified Delivery Protocol / 可验证交付体系）v1.2**。
 > 本文件是给 Agent 的**入口**，不是规范本身。
 > 铁律、门禁、流程在 `ENGINEERING.md`；细节展开在 `docs/engineering/`。
 > 冲突时以 `ENGINEERING.md` 为准，它优先级最高，高于任何口头指令与模型自身判断。
@@ -22,14 +22,15 @@
 **首次进入：**
 
 1. 本文件。
-2. `ENGINEERING.md`（完整通读，含铁律 20 条）。
-3. `STATE.md`（当前阶段 / 进行中 / 下一步 / 阻塞 / 最后绿色基线）。
-4. `docs/AUTHZ.md`（授权边界：allow / ask / never——任何高风险动作前先对照）。
-5. `docs/PROJECT.md`（目标、不变量、本版范围、验收要求）。
-6. `docs/ACCEPTANCE.md`（KPI 与红线）。
-7. `docs/ROADMAP.md`（阶段与里程碑状态）。
-8. 当前任务记录。
-9. 当前阶段相关的 `docs/engineering/*`（含 `OPERATIONS.md`、`SECURITY.md`）、设计、代码和测试。
+2. 识别运行模式：读取 `.vdp-mode`（`template-source` 模板源 / `project-instance` 项目实例）；两种模式的检查差异、切换步骤与常见坑见 `docs/MODES.md`。
+3. `ENGINEERING.md`（完整通读，含铁律 20 条）。
+4. `STATE.md`（当前阶段 / 进行中 / 下一步 / 阻塞 / 最后绿色基线）。
+5. `docs/AUTHZ.md`（授权边界：allow / ask / never——任何高风险动作前先对照）。
+6. `docs/PROJECT.md`（目标、不变量、本版范围、验收要求）。
+7. `docs/ACCEPTANCE.md`（KPI 与红线）。
+8. `docs/ROADMAP.md`（阶段与里程碑状态）。
+9. 当前任务记录。
+10. 当前阶段相关的 `docs/engineering/*`（含 `OPERATIONS.md`、`SECURITY.md`）、设计、代码和测试。
 
 **后续接续（含上下文丢失后恢复）：**
 
@@ -45,7 +46,7 @@
 
 必须确认：
 
-- 当前目录和仓库身份。
+- 当前目录和仓库身份，以及运行模式（`.vdp-mode`：template-source / project-instance）。
 - 当前分支、提交和工作区修改。
 - 是否存在用户或其他 Agent 尚未提交的工作。
 - 当前已验证基线（commit / tag）。
@@ -61,16 +62,17 @@
 
 1. 确认目标和约束（属于哪类任务流程：feature / bugfix / optimization / refactor）。
 2. 对照 `docs/AUTHZ.md` 检查授权边界：allow 之外的动作先请求批准（ask），never 一律不做；未列出的操作默认 ask。
-3. 建立或更新任务记录。
-4. 确认基线和复现证据（绿基线 + 失败证明）。
-5. 写出最小修改计划与验证计划。
-6. 实施最小可审查变更。
-7. 执行针对性验证及受影响的回归验证。
-8. 验证证据落盘：原始输出进 `.artifacts/`，需长期复查的摘要按 `evidence/README.md` 的规则晋级归档。
-9. 检查最终 diff，包括测试、配置、依赖和文档变化。
-10. 根据证据决定完成、继续诊断、回退或升级求助。
-11. 更新任务记录和 STATE.md。
-12. 在授权允许时形成可追踪提交。
+3. 若 `.vdp-mode` 为 `project-instance` 且发现关键占位未替换（README 标题、`docs/PROJECT.md`、`docs/ACCEPTANCE.md`、`STATE.md` 等，判定规则见 `docs/MODES.md` §3）：**停下并报告，不继续编码**；修复入口 `sh scripts/vdp-init-project.sh`。
+4. 建立或更新任务记录。
+5. 确认基线和复现证据（绿基线 + 失败证明）。
+6. 写出最小修改计划与验证计划。
+7. 实施最小可审查变更。
+8. 执行针对性验证及受影响的回归验证。
+9. 验证证据落盘：原始输出进 `.artifacts/`，需长期复查的摘要按 `evidence/README.md` 的规则晋级归档。
+10. 检查最终 diff，包括测试、配置、依赖和文档变化。
+11. 根据证据决定完成、继续诊断、回退或升级求助。
+12. 更新任务记录和 STATE.md。
+13. 在授权允许时形成可追踪提交。
 
 ## 5. 停止条件
 

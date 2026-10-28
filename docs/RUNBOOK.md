@@ -1,6 +1,6 @@
 # RUNBOOK.md — 运行 / 测试 / 发布 / 回滚手册
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 门 G6 要求：发布前**实际照做一遍**能从零跑起来，且**回滚方式实际演练过一次**。
 > 不实际演练过的 runbook 不算 runbook。

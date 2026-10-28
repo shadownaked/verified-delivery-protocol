@@ -1,6 +1,6 @@
 # 文件系统与变更管理（FILES）—— ENGINEERING.md §8 的展开
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 ## 1. 文件系统原则
 
@@ -11,6 +11,7 @@
 - 用户数据：使用独立、明确的数据位置。
 - 秘密信息：不进入仓库。
 - 临时实验：与正式实现隔离，完成后决定保留或移除。
+- 模板维护元信息：`.repo-meta/` 仅模板源仓库使用，不属于模板主体，项目实例可删除（边界见 `docs/MODES.md` §5）。
 
 不能把项目根目录当作所有文件的垃圾桶。
 
@@ -25,7 +26,7 @@
 ## 2. 命名规则
 
 ### 固定规范文件
-采用本规范约定的固定名称：`ENGINEERING.md` / `AGENTS.md` / `STATE.md` / `README.md` / `CHANGELOG.md`，以及 `docs/` 下的 `PROJECT.md` / `ACCEPTANCE.md` / `BASELINES.md` / `DESIGN.md` / `ROADMAP.md` / `RUNBOOK.md` / `BACKLOG.md`。
+采用本规范约定的固定名称：`ENGINEERING.md` / `AGENTS.md` / `STATE.md` / `README.md` / `CHANGELOG.md`，以及 `docs/` 下的 `PROJECT.md` / `ACCEPTANCE.md` / `BASELINES.md` / `DESIGN.md` / `ROADMAP.md` / `RUNBOOK.md` / `BACKLOG.md` / `MODES.md`。根目录另有单行模式开关 `.vdp-mode`（`template-source` / `project-instance`，语义与检查差异见 `docs/MODES.md`）。
 
 ### 其他文档和目录
 默认采用清晰的英文 `kebab-case`：

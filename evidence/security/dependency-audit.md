@@ -1,6 +1,6 @@
 # 依赖审计（模板）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 制度见 `docs/engineering/SECURITY.md`：P4（G4 前）与每次依赖更新时执行。
 > 每次审计追加一节；发现的问题逐条给出决策（修 / 接受并记录 / 替换）。

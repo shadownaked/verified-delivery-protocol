@@ -1,6 +1,6 @@
 # PROJECT.md — 项目合同（含立项书 charter）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 合并两套的立项内容：**charter（一句话定义 / 问题与用户 / 成功标准 / 非目标 / 约束）**
 > 与 **项目合同（不变量 / 版本范围 / 验收要求 / 交付物 / 授权 / 风险 / 变更规则）**。

@@ -1,6 +1,6 @@
 # 运营与可靠性（OPERATIONS）—— SLO / Error Budget 的模板化展开
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件把"速度 vs 稳定性"从口头权衡变成**规则**：用 SLO 定义"多稳才算稳"，
 > 用错误预算决定"还能改多快"。不绑定具体技术栈；指标与阈值由项目填写。

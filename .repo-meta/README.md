@@ -30,7 +30,7 @@
 | `evidence/**` | 模板骨架，不含本仓库的真实测量数据 |
 | `docs/releases/`、`docs/tasks/`、`docs/decisions/`、`docs/incidents/`、`docs/journal/` | 不预建、不写入本仓库过程记录 |
 
-**本仓库自己的版本变更史**（v1.0 → v1.1 → v1.1.1 → v1.1.2 …）只允许出现在两类位置：
+**本仓库自己的版本变更史**（v1.0 → v1.1 → v1.1.1 → v1.1.2 → v1.2 …）只允许出现在两类位置：
 commit message，或本目录（`.repo-meta/`）下的说明文件。**禁止**写入 `CHANGELOG.md` 或任何模板正文。
 
 ## 维护纪律

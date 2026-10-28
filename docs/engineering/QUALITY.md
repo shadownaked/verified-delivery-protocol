@@ -1,6 +1,6 @@
 # 质量与验证（QUALITY）—— ENGINEERING.md §6/§7 的展开
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件写"验证怎么做才有效"。铁律与门禁见 `ENGINEERING.md`。
 

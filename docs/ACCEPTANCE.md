@@ -1,6 +1,6 @@
 # ACCEPTANCE.md — 验收标准与 KPI
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件是**可测量的 Done**。红线 = 触发即门禁失败。
 > 逐条场景级验收要求见 `docs/PROJECT.md` §8，本文件只维护量化 KPI。

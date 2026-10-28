@@ -1,6 +1,7 @@
 ENGINEERING.md
 AGENTS.md
 STATE.md
+docs/MODES.md
 docs/engineering/WORKFLOW.md
 docs/engineering/QUALITY.md
 docs/engineering/FILES.md

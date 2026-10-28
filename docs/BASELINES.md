@@ -1,6 +1,6 @@
 # BASELINES.md — 指标基线记录表
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 反退化硬门的数据基础。每次测量都记在这里，作为后续比较基准。
 > 表格格式：日期 | commit | KPI | 数值 | 备注

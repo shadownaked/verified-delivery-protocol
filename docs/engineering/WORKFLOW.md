@@ -1,6 +1,6 @@
 # 开发流程（WORKFLOW）—— ENGINEERING.md §2 的展开
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 本文件写"每个阶段具体做什么"。铁律与门禁摘要见 `ENGINEERING.md`，本文件不重复其效力。
 

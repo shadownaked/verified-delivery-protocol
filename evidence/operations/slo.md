@@ -1,6 +1,6 @@
 # SLO — 服务级别目标记录（模板）
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 制度见 `docs/engineering/OPERATIONS.md`。每次测量追加一行；口径变更视同换基线，须记录。
 

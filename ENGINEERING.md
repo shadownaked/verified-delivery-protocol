@@ -1,6 +1,6 @@
 # ENGINEERING.md — 工程宪法
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 >
 > VDP 的三根支柱：**Verified**（唯一证据是运行结果）· **Delivery**（锚定真实交付，而非代码量）· **Protocol**（编号铁律与门禁，违反即任务未完成）。
 > 进度单位是"已验证、可交付、可恢复"，不是"又改了多少代码"。

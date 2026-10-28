@@ -1,6 +1,6 @@
 # DESIGN.md — 设计说明
 
-> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.1**
+> **Verified Delivery Protocol (VDP) · 可验证交付体系 · v1.2**
 
 > 简单项目可把本文件合并进 `docs/PROJECT.md`。
 > 涉及多个模块、复杂状态、数据迁移或重要外部合同的项目应独立保存。
