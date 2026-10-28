@@ -113,8 +113,15 @@ fi
 
 if [ "$VDP_MODE" = "template-source" ]; then
     # 模板源专属：占位符是本体。不因项目事实未填写而 FAIL（由 [1] 保证事实文档存在即可）。
+    # 标题判定刻意严于审计（审计只要求"允许占位"）：精确要求 `# 项目名称`，
+    #   因为该字符串是 instance 模式识别"未替换标题"的唯一锚点——锚点漂移会让
+    #   实例侧检查同时失效（假绿）。理由与代价见 docs/MODES.md §3.2。
     README_H1="$(grep -m1 '^# ' README.md 2>/dev/null || true)"
-    chk "README 标题保持模板占位" "$README_H1" "# 项目名称"
+    if [ "$README_H1" = "# 项目名称" ]; then
+        ok "README 标题保持模板占位"
+    else
+        no "README 标题已偏离模板占位（实际 ${README_H1:-<无一级标题>} / 期望 # 项目名称；修复：把一级标题恢复为 '# 项目名称'——它是实例侧判定未替换的锚点；若本检出物要当项目用，改跑 sh scripts/vdp-init-project.sh 并换成真实项目名）"
+    fi
     if grep -q 'TEMPLATE REPO' README.md 2>/dev/null; then
         ok "README 含模板声明块（TEMPLATE REPO）"
     else
@@ -140,9 +147,16 @@ elif [ "$VDP_MODE" = "project-instance" ]; then
         ok "README 标题已替换 ($README_H1)"
     fi
     if grep -q 'TEMPLATE REPO' README.md 2>/dev/null; then
-        no "README 仍含 TEMPLATE REPO 模板声明块（修复：删除该块，改写为'本项目由 VDP 管理'一句话，见 docs/MODES.md §6）"
+        no "README 仍含 TEMPLATE REPO 模板声明块（修复：删除该块，改写为'本项目由 VDP v1.2 管理'一句话，见 docs/MODES.md §6）"
     else
         ok "README 模板声明块已移除"
+    fi
+    # 审计 §4 的下限要求：实例 README 必须落一句"本项目由 VDP 管理"。
+    # 只查字符串 VDP（不绑定具体措辞/版本号），尊重实例自选的表述。
+    if grep -q 'VDP' README.md 2>/dev/null; then
+        ok "README 保留 VDP 归属说明"
+    else
+        no "README 无 VDP 归属说明（修复：在 README 顶部加一句'本项目由 VDP v1.2 管理 / This project is managed by VDP v1.2'，见 docs/MODES.md §4）"
     fi
     # 注意：全角冒号必须用字面量匹配——放进方括号表达式会被字节级引擎拆成单字节集合，
     # 冒号自身的剩余字节会被 [^[:space:]] 误判为"已填写内容"（v1.2 演示中实证过的假绿）。
@@ -259,8 +273,8 @@ echo
 
 # ---- 6. 合并版产物与源文件一致性（比对集合来自清单单一事实源） ----
 # template-source：产物必须存在且新鲜（合并版是模板交付物之一）。
-# project-instance：合并版可选——缺失 N/A；存在但过期/缺源仅 WARN
-#   （实例不应承担维护模板快照的义务；需要时可重生成或删除 dist/，见 docs/MODES.md §6）。
+# project-instance：合并版可选——缺失 N/A；数量不一致 / 过期 / 缺源**全部**仅 WARN
+#   （实例不应承担维护模板快照的义务；需要时可重生成或删除 dist/，见 docs/MODES.md §3.1）。
 echo "[6] 合并版产物新鲜度"
 OUT="dist/verified-delivery-protocol-complete.md"
 SRC_LIST="scripts/complete-sources.txt"
@@ -277,12 +291,19 @@ elif [ ! -f "$SRC_LIST" ]; then
 else
     ok "产物存在"
     N_SRC=$(grep -c . "$SRC_LIST" || true)
+    N_EMB=$(grep -c '<!-- ============ FILE:' "$OUT" || true)
     if [ "$IS_INSTANCE" = "1" ]; then
-        # 实例可裁剪清单与文档，模板的固定数量断言不适用；只校验清单与产物的内部一致性
-        chk "产物内嵌入文件数" "$(grep -c '<!-- ============ FILE:' "$OUT" || true)" "$N_SRC"
+        # 实例可裁剪清单与文档，且 dist 不是实例的维护义务（docs/MODES.md §3.1）。
+        # 因此 dist 相关的**全部**判定在实例模式统一为提示——数量不一致与"源缺失/过期"
+        # 是同一根因（裁剪后未重生成）的不同表现，单独判硬失败会让诊断指向错误方向。
+        if [ "$N_EMB" = "$N_SRC" ]; then
+            ok "产物与清单数量一致 ($N_EMB/$N_SRC)"
+        else
+            warn "产物与清单数量不一致（实际 $N_EMB / 清单 $N_SRC；instance 模式仅提示——重生成 sh scripts/build-complete.sh 或删除 dist/）"
+        fi
     else
         chk "清单源文件数" "$N_SRC" "38"
-        chk "产物内嵌入文件数" "$(grep -c '<!-- ============ FILE:' "$OUT" || true)" "$N_SRC"
+        chk "产物内嵌入文件数" "$N_EMB" "$N_SRC"
     fi
     # 清单内任一源文件比产物新 -> 产物过期；缺失的源文件单列
     STALE=""

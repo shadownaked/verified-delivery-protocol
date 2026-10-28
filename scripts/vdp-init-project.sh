@@ -7,7 +7,9 @@
 #   3) 可选：--remove-repo-meta 删除模板维护目录 .repo-meta/（绝不默认执行）
 #
 # 用法：sh scripts/vdp-init-project.sh [--remove-repo-meta]
-# 退出：成功 0；缺少 .vdp-mode 或未知参数 非 0。
+# 退出：成功 0；缺少 .vdp-mode、.vdp-mode 值非法或未知参数 非 0。
+#   .vdp-mode 值非法时**拒绝执行且不修改文件**——非法值意味着检出物处于未知状态，
+#   静默覆盖等于未经确认改写用户文件（见 docs/MODES.md §2）。
 #
 # 可移植性：目标 bash；纯 POSIX sh 亦可运行——pipefail 仅在 shell 支持时启用
 #   （本脚本没有依赖管道退出码的路径，不支持时跳过不降低严格性）。
@@ -56,8 +58,12 @@ case "$CUR_MODE" in
         printf '%s .vdp-mode 已切换: template-source -> project-instance\n' "$PREFIX"
         ;;
     *)
-        printf 'project-instance\n' > "$MODE_FILE"
-        printf '%s 检测到非法模式值 "%s"，已修正为 project-instance（允许值与语义见 docs/MODES.md）\n' "$PREFIX" "$CUR_MODE"
+        # 非法值意味着检出物处于未知状态（可能是手工写坏、也可能是误把模板源当项目用）。
+        # 静默覆盖等于未经确认改写用户文件：拒绝执行，保持文件原样，交由人判断。
+        printf '%s ERROR: .vdp-mode 值非法 "%s"，未做任何修改\n' "$PREFIX" "$CUR_MODE" >&2
+        printf '%s   允许值：template-source / project-instance（严格匹配，无空白容忍）\n' "$PREFIX" >&2
+        printf '%s   修复：手工把 .vdp-mode 改为上述之一后重跑本脚本（语义见 docs/MODES.md §2）\n' "$PREFIX" >&2
+        exit 1
         ;;
 esac
 
@@ -65,7 +71,8 @@ esac
 # 判定规则与常见坑集中在 docs/MODES.md（单一事实源，避免两处漂移）。
 printf '%s 下一步：把模板占位替换为项目事实。scripts/test.sh 在 project-instance 模式强制检查以下必改项：\n' "$PREFIX"
 cat <<EOF
-$PREFIX [必改] README.md          — 标题 "# 项目名称" 换成真实项目名；删除 TEMPLATE REPO 模板声明块
+$PREFIX [必改] README.md          — 标题 "# 项目名称" 换成真实项目名；删除 TEMPLATE REPO 声明块，
+$PREFIX                              并保留一句"本项目由 VDP v1.2 管理 / This project is managed by VDP v1.2"
 $PREFIX [必改] docs/PROJECT.md    — 填写目标/使用者/范围，至少一条 REQ-xxx 冒号后有实际内容
 $PREFIX [必改] docs/ACCEPTANCE.md — "## 1. KPI 表" 至少一行真实 KPI（定义/测量方法/红线）
 $PREFIX [必改] STATE.md           — "当前阶段" 填 P0–P7 之一；"下一步" 至少一条具体动作

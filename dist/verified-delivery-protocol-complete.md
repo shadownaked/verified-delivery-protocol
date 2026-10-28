@@ -494,6 +494,9 @@ VDP 模板源仓库与"复制模板而生的项目实例"对占位符的合法�
 - 允许值（严格匹配，无空白容忍）：`template-source` 或 `project-instance`。
 - 缺失或值非法：`scripts/test.sh` 检查 [0] 直接 FAIL，并输出允许值与修复方式。
 - 模板源仓库默认 `template-source`；实例化切换只通过 `scripts/vdp-init-project.sh`。
+- `vdp-init-project.sh` 对**非法值拒绝执行**（`VDP-INIT: ERROR`，exit 1）且不改文件：
+  非法值意味着检出物处于未知状态，静默覆盖等于未经确认改写用户文件。修正方式为
+  手工把 `.vdp-mode` 改为允许值之一后重跑脚本。
 
 ## 3. 检查差异（scripts/test.sh）
 
@@ -507,18 +510,26 @@ VDP 模板源仓库与"复制模板而生的项目实例"对占位符的合法�
 | VDP 标识覆盖与主体规模下限 | [5] |
 | 空目录 / 旧名残留 / bench 入口契约 / 异常占位标记 / 证据目录策略 | [7]–[11] |
 
-合并版产物（[6]）两种模式语义不同：template-source 下必须存在且新鲜
-（它是模板交付物之一）；project-instance 下可选——缺失计 N/A，
-存在但过期或裁剪了源文件仅 WARN（实例不承担维护模板快照的义务，
-需要便携快照时重跑 `sh scripts/build-complete.sh`，不需要可删除 `dist/`）。
+合并版产物（[6]）两种模式语义不同：
+
+- **template-source**：必须存在且新鲜；清单源数固定为 38，产物内嵌数量必须与清单相等（硬断言）。
+- **project-instance**：dist 不是实例的维护义务，**所有** dist 相关判定统一为提示——
+  缺失计 N/A；数量不一致、源文件缺失、产物过期均 WARN。它们通常是同一根因
+  （裁剪文档后未重生成）的不同表现，单独判硬失败会把诊断指向错误方向。
+  需要便携快照时重跑 `sh scripts/build-complete.sh`，不需要可删除 `dist/`。
 
 ### 3.2 template-source 专属（目标：模板纯净性）
 
 | 检查 | 规则 |
 |---|---|
-| README 标题保持占位 | 第一个 `# ` 标题必须仍是 `# 项目名称` |
+| README 标题保持占位 | 第一个 `# ` 标题必须仍是 `# 项目名称`（**精确相等**） |
 | README 含模板声明块 | 必须包含 `TEMPLATE REPO` 声明块，且说明 `.vdp-mode` |
 | `.repo-meta/README.md` | 存在则 PASS；不存在仅 **WARN**（不计 FAIL），权衡理由见 §6 |
+
+标题检查**刻意严于审计**（审计只要求"允许占位"）：`# 项目名称` 是实例侧识别
+"标题未替换"的唯一锚点，锚点漂移会让实例检查同时失效（假绿）。代价是
+"保留 template-source 但改了标题"的 fork 会判红——这属于刻意的显式 diff：
+要改标题就应实例化（跑 `vdp-init-project.sh`），而不是停在模板源身份下改形态。
 
 template-source 模式**不会**因为项目事实文档（PROJECT / ACCEPTANCE / STATE 等）
 未填写而 FAIL——它们存在即可（存在性由检查 [1] 覆盖）。
@@ -528,7 +539,8 @@ template-source 模式**不会**因为项目事实文档（PROJECT / ACCEPTANCE 
 | 检查 | 机器可判定的最小规则 |
 |---|---|
 | README 标题已替换 | 第一个 `# ` 标题不得仍是 `# 项目名称` |
-| README 模板声明块已移除 | 不得再包含 `TEMPLATE REPO` 声明块（应改写为"本项目由 VDP 管理"一句话） |
+| README 模板声明块已移除 | 不得再包含 `TEMPLATE REPO` 声明块 |
+| README 保留 VDP 归属 | README 内必须出现字符串 `VDP`（审计 §4 要求落一句"本项目由 VDP 管理"；只查归属字符串，不绑定措辞与版本号） |
 | PROJECT.md 有实料 | 至少一行 `- REQ-编号：` 冒号后有非空内容（MUST 要求已开始填写） |
 | ACCEPTANCE.md 有实料 | `## 1. KPI 表` 分节内至少一行：首列非空且非表头/非分隔线的表格行，或带内容的列表项 |
 | STATE.md 指明阶段 | 存在 `## 当前阶段：P0`–`P7` 之一的行 |
@@ -543,9 +555,10 @@ FAIL 输出附带最短修复路径：`sh scripts/vdp-init-project.sh`（重新�
 
 1. 完整复制或 clone 模板源仓库（含 `.vdp-mode`）。
 2. 运行 `sh scripts/vdp-init-project.sh`：
-   - `.vdp-mode` 切换为 `project-instance`；
+   - `.vdp-mode` 切换为 `project-instance`（若原值非法则报错退出、不改文件，见 §2）；
    - 终端输出必改文件清单（README / PROJECT / ACCEPTANCE / STATE 优先）。
-3. 按清单把模板占位替换为项目事实。
+3. 按清单把模板占位替换为项目事实；README 保留一句
+   "本项目由 VDP v1.2 管理 / This project is managed by VDP v1.2"。
 4. 运行 `sh scripts/test.sh`，全绿后才进入正常开发循环（AGENTS.md §4）。
 
 可选清理：`sh scripts/vdp-init-project.sh --remove-repo-meta`
@@ -568,11 +581,12 @@ FAIL 输出附带最短修复路径：`sh scripts/vdp-init-project.sh`（重新�
 - **`.repo-meta/README.md` 判 WARN 不判 FAIL**：`.repo-meta/` 被明确设计为
   可删除的维护目录，模式契约只约束模板主体；若判 FAIL，会强迫"fork 后仍当
   模板源用"的仓库保留一个文档里声明可删的目录，规则自相矛盾。
-- **合并版 [6] 在 instance 模式降为提示**：实例填写 PROJECT / ACCEPTANCE /
+- **合并版 [6] 在 instance 模式全部降为提示**：实例填写 PROJECT / ACCEPTANCE /
   STATE 等文件后，这些源文件必然新于模板携带的 `dist/` 快照——若照搬
   template-source 的严格判定，实例将永远红基线。合并版是模板源的交付物，
-  实例缺失计 N/A、过期仅 WARN；固定数量断言（清单 38 源）同样只在
-  template-source 模式生效。
+  实例缺失计 N/A；数量不一致、源缺失、过期**均**为 WARN。数量不一致与
+  "过期"是同一根因（裁剪后未重生成）的不同表现，因此不做部分硬判——
+  否则同一次操作会得到互相矛盾的诊断信号。
 - **SCOPE_MIN_FILES = 30**：实例项目裁剪文档后，主体 md 数量可能低于下限，
   检查 [5] 会 FAIL。这是**刻意的显式 diff**：裁剪文档属于收紧模板范围，
   应同步调整 `scripts/test.sh` 中的 `SCOPE_MIN_FILES` 并在提交信息里说明，
@@ -582,7 +596,8 @@ FAIL 输出附带最短修复路径：`sh scripts/vdp-init-project.sh`（重新�
   不追求全量替换检测。
 - **README 声明块的替换**：实例应把 TEMPLATE REPO 声明块改写为一句话，
   例如"本项目由 VDP v1.2 管理 / This project is managed by VDP v1.2"——
-  VDP 是协议名，不是项目名。
+  VDP 是协议名，不是项目名。该句由检查强制要求（只查 `VDP` 字符串，
+  不校验版本号与措辞）。
 - **`.vdp-mode` 与"项目名"无关**：它声明的是"这份检出物是谁"（模板源还是
   实例），不是项目叫什么；项目名在 README 与 `docs/PROJECT.md` 里。
 - **测试替身不适用**：模式检查读取的是仓库静态事实，无需运行环境；
