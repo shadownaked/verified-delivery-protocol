@@ -1,0 +1,98 @@
+=== VDP 体系自检 ===
+
+[1] 核心文件存在性
+PASS  存在 ENGINEERING.md
+PASS  存在 AGENTS.md
+PASS  存在 STATE.md
+PASS  存在 README.md
+PASS  存在 CHANGELOG.md
+PASS  存在 .gitignore
+PASS  存在 docs/PROJECT.md
+PASS  存在 docs/ACCEPTANCE.md
+PASS  存在 docs/BASELINES.md
+PASS  存在 docs/ROADMAP.md
+PASS  存在 docs/RUNBOOK.md
+PASS  存在 docs/BACKLOG.md
+PASS  存在 docs/DESIGN.md
+PASS  存在 docs/AUTHZ.md
+PASS  存在 docs/AUTHZ.yaml
+PASS  存在 docs/engineering/WORKFLOW.md
+PASS  存在 docs/engineering/QUALITY.md
+PASS  存在 docs/engineering/FILES.md
+PASS  存在 docs/engineering/BOOTSTRAP_PROMPT.md
+PASS  存在 docs/engineering/OPERATIONS.md
+PASS  存在 docs/engineering/SECURITY.md
+PASS  存在 docs/bench/benchmarks.yml
+PASS  存在 scripts/test.sh
+PASS  存在 scripts/build-complete.sh
+PASS  存在 scripts/bench.sh
+PASS  存在 scripts/complete-sources.txt
+PASS  存在 evidence/README.md
+PASS  存在 evidence/operations/slo.md
+PASS  存在 evidence/operations/error-budget.md
+PASS  存在 evidence/security/threat-model.md
+PASS  存在 evidence/security/dependency-audit.md
+
+[2] 铁律编号完整性
+PASS  铁律条数 (20)
+PASS  F1–F20 无缺号
+
+[3] 阶段编号完整性
+PASS  阶段数 (8)
+PASS  P0–P7 无缺号
+
+[4] 清单项数（防止有人悄悄删门禁项）
+PASS  门禁清单项数 (11)
+PASS  发布清单项数 (5)
+
+[5] VDP 标识覆盖与主体规模
+PASS  VDP 标识覆盖 (34/34)
+PASS  主体 md 数量 (34 >= 30)
+
+[6] 合并版产物新鲜度
+PASS  产物存在
+PASS  清单源文件数 (37)
+PASS  产物内嵌入文件数 (37)
+PASS  清单源文件均存在
+PASS  产物未过期（全部 37 个源比对）
+
+[7] 空目录检查（模板主体）
+PASS  无空目录
+
+[8] 旧名残留（回归保护：改名后不得留旧称）
+PASS  旧名'统一开发体系'残留数 (0)
+
+[9] bench 入口契约（隔离配置，不跑真实基准）
+PASS  存在 scripts/bench.sh
+PASS  存在 scripts/test.sh
+PASS  存在 scripts/build-complete.sh
+FAIL  执行位 scripts/bench.sh (100644，期望 100755；修复：git update-index --chmod=+x scripts/bench.sh)
+PASS  执行位 scripts/test.sh (100755)
+PASS  执行位 scripts/build-complete.sh (100755)
+PASS  未配置时退出码 (2)
+PASS  全部成功时退出码 (0)
+PASS  基准失败时退出码 (1)
+PASS  输出契约 BENCH: 前缀（unconfigured.txt）
+PASS  输出契约 BENCH: 前缀（pass.txt）
+PASS  输出契约 BENCH: 前缀（fail.txt）
+PASS  证据落盘 meta.json（ev-u）
+PASS  证据落盘 summary.md（ev-u）
+PASS  证据落盘 meta.json（ev-p）
+PASS  证据落盘 summary.md（ev-p）
+PASS  证据落盘 meta.json（ev-f）
+PASS  证据落盘 summary.md（ev-f）
+PASS  未配置时拒绝理由明确
+PASS  成功路径标注 BENCH: OK
+PASS  失败路径标注 BENCH: FAIL
+
+[10] 异常占位标记
+PASS  无孤立双反引号标记（占位请用 [[TODO: 说明]]，约定见 FILES.md §2）
+
+[11] 证据目录与忽略策略
+PASS  .artifacts/ 已忽略
+PASS  evidence/ 未被忽略（长期证据入库）
+
+=== 汇总 ===
+PASS: 69    FAIL: 1    N/A: 0
+结果: FAIL —— 禁止在红基线上叠加改动（铁律 F1）
+exit=1

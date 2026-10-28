@@ -1,0 +1,7 @@
+## build-complete.sh 可复现性（隔离副本运行，与提交版本逐字节比较）
+PASS: dist/verified-delivery-protocol-complete.md
+  字节数: 129028
+  嵌入文件: 30/30
+exit=0
+cmp: IDENTICAL（逐字节一致）
+129028 dist/verified-delivery-protocol-complete.md
