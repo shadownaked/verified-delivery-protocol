@@ -53,6 +53,14 @@ fi
 # ---- 读取基准配置 -------------------------------------------------------
 # 只解析 benchmarks.yml 的最小子集（- name: X / run: "Y"），不依赖 YAML 解析器。
 # 输出：每行 "name<TAB>run"；name 清洗为 [A-Za-z0-9._-]；run 仅去掉成对包裹引号。
+# 语义区分（重要）：
+#   - 配置文件不存在            -> 未配置（退出码 2，诚实拒绝）
+#   - 配置存在但无任何 name 条目 -> 无法解析/格式不支持（退出码 3，输入错误）
+#   二者不可混淆：把"配置写坏了"当成"还没配基准"，会让 optimization 误以为只是未开始。
+if [ -e "$CONFIG" ] && [ ! -f "$CONFIG" ]; then
+    self_error "配置路径存在但不是普通文件: $CONFIG"
+fi
+
 if [ -f "$CONFIG" ]; then
     PAIRS="$(awk -v q="'" '
         function stripq(s,   f, l) {
@@ -80,6 +88,9 @@ if [ -f "$CONFIG" ]; then
         }
         END { flush() }
     ' "$CONFIG")" || self_error "配置解析失败: $CONFIG"
+    if ! grep -qE '^[[:space:]]*-[[:space:]]*name:[[:space:]]*[^[:space:]]' "$CONFIG"; then
+        self_error "配置存在但解析不出任何基准条目（格式不被支持）: $CONFIG"
+    fi
 else
     PAIRS=""
 fi
@@ -162,7 +173,11 @@ write_summary() {
     echo "- 证据目录：$OUT_DIR"
     echo
     if [ "$CONFIGURED" -eq 0 ]; then
-        echo "未配置任何可运行基准（配置文件缺失或所有 run 为空）。"
+        if [ -f "$CONFIG" ]; then
+            echo "配置存在，但没有任何已启用的 run（全部为空）：$CONFIG"
+        else
+            echo "配置文件不存在：$CONFIG"
+        fi
         echo "此状态视同 BLOCKED：optimization 任务（ENGINEERING.md §3.3）不得宣称完成测量。"
         echo "配置方式见 docs/bench/benchmarks.yml 头部注释。"
     else
@@ -186,7 +201,12 @@ fi
 
 # ---- 退出 ---------------------------------------------------------------
 if [ "$CONFIGURED" -eq 0 ]; then
-    echo "BENCH: NO_BENCHMARKS_CONFIGURED — 在 $CONFIG 声明基准（格式见该文件注释）；契约见 docs/engineering/QUALITY.md §8"
+    if [ -f "$CONFIG" ]; then
+        echo "BENCH: NO_BENCHMARKS_CONFIGURED — 配置存在但没有任何已启用的 run（全部为空）：$CONFIG"
+    else
+        echo "BENCH: NO_BENCHMARKS_CONFIGURED — 配置文件不存在，请在 $CONFIG 声明基准（格式见该文件注释）"
+    fi
+    echo "BENCH: 契约见 docs/engineering/QUALITY.md §8"
     exit 2
 fi
 if [ "$FAILURES" -ne 0 ]; then

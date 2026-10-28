@@ -997,11 +997,34 @@ REQ-需求
 
 `scripts/bench.sh` 的最小契约（模板已内置实现；项目在 `docs/bench/benchmarks.yml` 声明自己的基准）：
 
-- 未配置任何可运行基准 → 输出 `BENCH: NO_BENCHMARKS_CONFIGURED`，退出码 2（诚实拒绝：既不是成功也不是失败；此状态下 optimization 任务不得宣称完成测量）。
-- 基准执行失败 → `BENCH: FAIL <名称>`，退出码 1；全部成功 → `BENCH: OK`，退出码 0。
-- 每次运行把元信息与摘要落盘到 `.artifacts/bench/<UTC时间戳>/`（`meta.json` + `summary.md` + 各基准日志）；可用环境变量 `VDP_BENCH_EVIDENCE_ROOT` 重定向证据目录。
+- **退出码语义**（四分法，不可合并）：
+  - `0` 全部基准成功；
+  - `1` 有基准执行失败（`BENCH: FAIL <名称>`）；
+  - `2` 未配置任何可运行基准（`BENCH: NO_BENCHMARKS_CONFIGURED`，诚实拒绝：既不是成功也不是失败）；
+  - `3` 脚本自身或证据链错误（`BENCH: ERROR <原因>`）：时间戳获取、证据目录创建、证据写入失败，
+    或**配置存在但解析不出任何基准条目**。
+  `2` 与 `3` 必须区分：前者是"还没配"，后者是"输入/证据坏了"；两种状态下 optimization 任务都不得宣称完成测量。
+- **配置缺失 vs 配置无效**：文件不存在 → 退出 2；文件存在但无 `- name:` 条目（格式不支持）→ 退出 3；
+  文件存在但所有 `run` 为空 → 退出 2，且提示语明确说"配置存在但没有已启用的 run"。
+- **证据落盘**：每次运行把元信息与摘要写入 `.artifacts/bench/<UTC时间戳>/`（`meta.json` + `summary.md` + 各基准日志）；
+  同一秒内多次运行追加 `-1/-2` 序号，不覆写既有证据。
+- **环境变量**：`VDP_BENCH_EVIDENCE_ROOT` 重定向证据目录；`VDP_BENCH_CONFIG` 覆盖配置文件路径
+  （自检与 CI 用临时配置时使用）。
 - optimization 流程（ENGINEERING.md §3.3）的 before/after 数字必须来自 bench 证据目录，不得手填。
-- `scripts/test.sh` 检查 [9] 逐项校验本契约（存在性、`BENCH:` 前缀、退出码 ∈ {0,1,2}、拒绝理由明确）。
+- `scripts/test.sh` 检查 [9] 校验本契约：脚本存在且 git 索引模式为 `100755`、`BENCH:` 前缀、
+  退出码四路径（0/1/2/3）、证据落盘（meta/summary）、拒绝理由明确；使用临时合成配置，
+  **不执行项目真实基准**。
+
+### 合并产物新鲜度检查的边界
+
+`scripts/test.sh` 检查 [6] 以**文件 mtime** 判定 `dist` 是否过期，比对集合为
+`scripts/complete-sources.txt` 的全部源文件。已知边界：
+
+- 只覆盖"源文件比产物新"这一条件。若源内容被修改但 mtime 未前进（`tar -x` / `unzip` / `rsync -a`、
+  构建缓存还原、跨机时钟偏差、`touch` 回拨），该检查会漏判。
+- 因此"产物新鲜度"是**低成本回归保护**，不替代"改了源就重建产物，并在发布记录中核对交付物身份"。
+- 需要更强保证时，在发布流程比对交付物校验和（见 `docs/templates/release.md` §5 构建与供应链透明度），
+  而不是依赖 mtime。
 
 ## 9. 把制度落实成机械约束
 
@@ -3052,12 +3075,53 @@ evidence/
 
 ### Added
 ### Changed
-- `.gitignore`：忽略本地工具与代理工作目录 `.crush/`、`.repo-meta/.local-agent-docs/`（后者已从版本跟踪中移除，
-  内容保留在本地）；这类目录不属于模板内容。
 ### Fixed
 ### Deprecated
 ### Removed
 ### Security
+
+## v1.1.2 - 2026-10-28
+
+依据第二轮独立复核（patch-A 复核）进行的补丁级修订。核心目标：让"检查器可信"从声明变成事实——
+范围枚举不再依赖"下游写了 ignore 规则"，配置错误不再被当成"尚未配置"。
+
+### Changed
+- `.gitignore`：忽略本地工具与代理工作目录 `.crush/`、`.repo-meta/.local-agent-docs/`（后者同时从版本
+  跟踪中移除，内容保留在本地）；这类目录不属于模板内容。
+
+### Fixed
+- **B-1（不实表述 + 实现缺陷）**：v1.1.1 声称 `git ls-files --exclude-standard` 会"天然排除
+  `node_modules/`、`vendor/`"——**错误**：`--exclude-standard` 只遵守 git 忽略规则，第三方目录被提交
+  或未 ignore 时仍会进入扫描范围，导致下游首次自检误报"模板 md 缺 VDP 标识"。
+  现在 git 与 find 两条枚举分支**共用同一份排除表** `SCOPE_EXCLUDE_RE`
+  （`node_modules` / `vendor` / `.crush` / `.screenshots` / `.artifacts` / `.repo-meta` / `.git` / `dist`），
+  不再依赖下游 ignore 规则；`test.sh` 注释与本节表述同步更正。
+- **B-2（语义漏洞）**：`bench.sh` 对"配置存在但无法解析"静默返回 2，且提示语要求用户"在该文件声明基准"
+  （文件明明存在）。现在：配置路径非普通文件、或配置存在但解析不出任何 `- name:` 条目 → `BENCH: ERROR` +
+  退出码 3；配置存在但 `run` 全空 → 退出 2，且提示语明确区分"配置存在但没有已启用的 run"与"配置文件不存在"。
+- **B-3（噪声与潜在漏检）**：`test.sh` 的 [5]/[8]/[10] 用 `for f in $SCOPE_MD` 按空白分词，
+  含空格的文件名会产生 `grep: No such file` 噪声并可能漏检。改为 `while IFS= read -r`。
+- **B-4（文档与实现背离）**：`docs/engineering/QUALITY.md` §8 仍写"退出码 ∈ {0,1,2}"、未记录
+  `VDP_BENCH_CONFIG`。现已同步为四分法（0/1/2/3）、补 `VDP_BENCH_CONFIG`、列出 [9] 的校验项；
+  [9] 新增两条错误路径用例（不可解析配置 → 3、证据目录不可创建 → 3，均须输出 `BENCH: ERROR`）。
+- **B-6（设计边界，文档化）**：`[6]` 用 mtime 判定产物过期，源内容变更但 mtime 未前进（`tar -x` /
+  `rsync -a` / 缓存还原 / 时钟偏差）时会漏判。已在 `QUALITY.md` §8 新增"合并产物新鲜度检查的边界"，
+  明确该检查是低成本回归保护，不替代发布流程的校验和核对。
+
+### Compatibility
+- 退出码 3 的触发条件比 v1.1.1 更宽（新增"配置存在但无 name 条目"）。CI 若将 bench 视为"允许 2/3 跳过"，
+  需同时显式处理 3——3 表示输入或证据链坏了，不应静默跳过。
+- 扫描范围不再受下游 ignore 规则影响：即使 `vendor/` 被提交，也不会再被 [5] 误报。
+
+### Known limitations
+- [6] 仍是 mtime 谓词（见上）；需要强保证时依赖发布流程校验和。
+- Windows（`core.filemode=false`）下执行位只能由 git 索引模式证明。
+
+### Rollback
+- `git revert` 本补丁提交；`dist/` 由 `sh scripts/build-complete.sh` 重生成。
+
+### Release evidence
+- 自检 `sh scripts/test.sh` 全绿（含新增 exit 3 用例）；B-1/B-2/B-3 的变异测试见补丁交付报告。
 
 ## v1.1.1 - 2026-10-28
 
@@ -3084,6 +3148,7 @@ bench 自检与项目真实基准解耦。
   → 已纳入合并清单（嵌入文件 30 → 37）。
 - **S3-6** 扫描范围未排除第三方目录：改为优先 `git ls-files`（受控文件 + 未忽略文件，
   天然排除 `node_modules/`、`vendor/`）；无 git 时 find 增加第三方目录排除。
+  **（更正：本条的"天然排除"表述不准确，见 v1.1.2 B-1；实际依赖 ignore 规则，v1.1.2 已改为共用排除表。）**
 - **S3-7** 模板正文引用仓库管理元信息路径 → `CHANGELOG` 改为不依赖该路径的表述。
 - **S3-9** bench 证据目录秒级时间戳冲突（同一秒两次运行互相覆写）→ 目录存在时追加 `-1/-2` 序号。
 - **自查新发现（提交后回归）**：[7] 空目录检查只排除 `./.artifacts/*` 的**内容**，未排除目录**本身**；

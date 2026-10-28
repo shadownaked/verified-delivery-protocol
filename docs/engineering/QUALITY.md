@@ -169,11 +169,34 @@ REQ-需求
 
 `scripts/bench.sh` 的最小契约（模板已内置实现；项目在 `docs/bench/benchmarks.yml` 声明自己的基准）：
 
-- 未配置任何可运行基准 → 输出 `BENCH: NO_BENCHMARKS_CONFIGURED`，退出码 2（诚实拒绝：既不是成功也不是失败；此状态下 optimization 任务不得宣称完成测量）。
-- 基准执行失败 → `BENCH: FAIL <名称>`，退出码 1；全部成功 → `BENCH: OK`，退出码 0。
-- 每次运行把元信息与摘要落盘到 `.artifacts/bench/<UTC时间戳>/`（`meta.json` + `summary.md` + 各基准日志）；可用环境变量 `VDP_BENCH_EVIDENCE_ROOT` 重定向证据目录。
+- **退出码语义**（四分法，不可合并）：
+  - `0` 全部基准成功；
+  - `1` 有基准执行失败（`BENCH: FAIL <名称>`）；
+  - `2` 未配置任何可运行基准（`BENCH: NO_BENCHMARKS_CONFIGURED`，诚实拒绝：既不是成功也不是失败）；
+  - `3` 脚本自身或证据链错误（`BENCH: ERROR <原因>`）：时间戳获取、证据目录创建、证据写入失败，
+    或**配置存在但解析不出任何基准条目**。
+  `2` 与 `3` 必须区分：前者是"还没配"，后者是"输入/证据坏了"；两种状态下 optimization 任务都不得宣称完成测量。
+- **配置缺失 vs 配置无效**：文件不存在 → 退出 2；文件存在但无 `- name:` 条目（格式不支持）→ 退出 3；
+  文件存在但所有 `run` 为空 → 退出 2，且提示语明确说"配置存在但没有已启用的 run"。
+- **证据落盘**：每次运行把元信息与摘要写入 `.artifacts/bench/<UTC时间戳>/`（`meta.json` + `summary.md` + 各基准日志）；
+  同一秒内多次运行追加 `-1/-2` 序号，不覆写既有证据。
+- **环境变量**：`VDP_BENCH_EVIDENCE_ROOT` 重定向证据目录；`VDP_BENCH_CONFIG` 覆盖配置文件路径
+  （自检与 CI 用临时配置时使用）。
 - optimization 流程（ENGINEERING.md §3.3）的 before/after 数字必须来自 bench 证据目录，不得手填。
-- `scripts/test.sh` 检查 [9] 逐项校验本契约（存在性、`BENCH:` 前缀、退出码 ∈ {0,1,2}、拒绝理由明确）。
+- `scripts/test.sh` 检查 [9] 校验本契约：脚本存在且 git 索引模式为 `100755`、`BENCH:` 前缀、
+  退出码四路径（0/1/2/3）、证据落盘（meta/summary）、拒绝理由明确；使用临时合成配置，
+  **不执行项目真实基准**。
+
+### 合并产物新鲜度检查的边界
+
+`scripts/test.sh` 检查 [6] 以**文件 mtime** 判定 `dist` 是否过期，比对集合为
+`scripts/complete-sources.txt` 的全部源文件。已知边界：
+
+- 只覆盖"源文件比产物新"这一条件。若源内容被修改但 mtime 未前进（`tar -x` / `unzip` / `rsync -a`、
+  构建缓存还原、跨机时钟偏差、`touch` 回拨），该检查会漏判。
+- 因此"产物新鲜度"是**低成本回归保护**，不替代"改了源就重建产物，并在发布记录中核对交付物身份"。
+- 需要更强保证时，在发布流程比对交付物校验和（见 `docs/templates/release.md` §5 构建与供应链透明度），
+  而不是依赖 mtime。
 
 ## 9. 把制度落实成机械约束
 

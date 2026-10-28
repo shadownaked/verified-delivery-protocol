@@ -55,19 +55,19 @@ if ! find . -name "*.md" -not -path "./dist/*" >/dev/null 2>&1; then
 fi
 
 # 模板主体 md 枚举：
-#   有 git 时用 `git ls-files`（受控文件 + 未被忽略的新文件），天然排除 node_modules/vendor；
-#   无 git 时用 find 并排除常见第三方目录。
-# 统一排除：.git / dist 产物 / .repo-meta 仓库管理元信息 / .screenshots 本地截图 / .artifacts 本地运行产物
+#   有 git 时用 `git ls-files`（受控文件 + 未被忽略的新文件）；无 git 时用 find 全量枚举。
+#   两条分支**共用同一份排除表** SCOPE_EXCLUDE_RE，避免"git 分支排除了、find 分支没排除"的语义漂移。
+#   注意：`--exclude-standard` 只遵守 git 忽略规则，**不会**天然排除 node_modules/vendor——
+#   第三方目录必须由下面的排除表兜底（无论是否被 ignore）。
+SCOPE_EXCLUDE_RE='(^|/)(node_modules|vendor|\.crush|\.screenshots|\.artifacts|\.repo-meta|\.git)(/|$)|^dist/'
+
 list_scope_md() {
     if git_ok; then
         git ls-files --cached --others --exclude-standard -- "*.md" 2>/dev/null \
-            | grep -vE '^(dist|\.repo-meta|\.screenshots|\.artifacts)/' | sort
+            | grep -vE "$SCOPE_EXCLUDE_RE" | sort
     else
-        find . -name "*.md" \
-            -not -path "./.git/*" -not -path "./dist/*" -not -path "./.repo-meta/*" \
-            -not -path "./.screenshots/*" -not -path "./.artifacts/*" \
-            -not -path "*/node_modules/*" -not -path "*/vendor/*" \
-            | sed 's|^\./||' | sort
+        find . -name "*.md" -not -path "./.git/*" \
+            | sed 's|^\./||' | grep -vE "$SCOPE_EXCLUDE_RE" | sort
     fi
 }
 
@@ -133,14 +133,17 @@ echo "[5] VDP 标识覆盖与主体规模"
 TOT=0
 HIT=0
 MISSING_ID=""
-for f in $SCOPE_MD; do
+while IFS= read -r f; do
+    [ -n "$f" ] || continue
     TOT=$((TOT+1))
     if grep -q "Verified Delivery Protocol" "$f"; then
         HIT=$((HIT+1))
     else
         MISSING_ID="$MISSING_ID $f"
     fi
-done
+done <<EOF
+$SCOPE_MD
+EOF
 if [ -z "$MISSING_ID" ]; then ok "VDP 标识覆盖 ($HIT/$TOT)"; else no "VDP 标识覆盖 ($HIT/$TOT)，缺标识:$MISSING_ID"; fi
 if [ "$TOT" -ge "$SCOPE_MIN_FILES" ]; then
     ok "主体 md 数量 ($TOT >= $SCOPE_MIN_FILES)"
@@ -193,10 +196,13 @@ echo
 # ---- 8. 禁止残留旧名（改名同步的回归保护） ----
 echo "[8] 旧名残留（回归保护：改名后不得留旧称）"
 OLD=0
-for f in $SCOPE_MD; do
+while IFS= read -r f; do
+    [ -n "$f" ] || continue
     N=$(grep -c "统一开发体系" "$f" || true)
     OLD=$((OLD + N))
-done
+done <<EOF
+$SCOPE_MD
+EOF
 chk "旧名'统一开发体系'残留数" "$OLD" "0"
 echo
 
@@ -270,6 +276,22 @@ fi
 if grep -q '^BENCH: OK' "$TMPD/pass.txt"; then ok "成功路径标注 BENCH: OK"; else no "成功路径缺少 BENCH: OK"; fi
 if grep -q '^BENCH: FAIL' "$TMPD/fail.txt"; then ok "失败路径标注 BENCH: FAIL"; else no "失败路径缺少 BENCH: FAIL"; fi
 
+# 9.3 错误路径一：配置存在但无法解析 -> exit 3（"配置坏了"不等于"还没配"）
+printf 'this is not yaml at all\n' >"$TMPD/bad.yml"
+VDP_BENCH_CONFIG="$TMPD/bad.yml" VDP_BENCH_EVIDENCE_ROOT="$TMPD/ev-b" \
+    sh scripts/bench.sh >"$TMPD/bad.txt" 2>&1
+RC_B=$?
+chk "不可解析配置退出码" "$RC_B" "3"
+if grep -q '^BENCH: ERROR' "$TMPD/bad.txt"; then ok "不可解析配置标注 BENCH: ERROR"; else no "不可解析配置未标注 BENCH: ERROR"; fi
+
+# 9.4 错误路径二：证据目录不可创建 -> exit 3（证据链断裂 ≠ 基准失败）
+: >"$TMPD/not-a-dir"
+VDP_BENCH_CONFIG="$TMPD/pass.yml" VDP_BENCH_EVIDENCE_ROOT="$TMPD/not-a-dir/sub" \
+    sh scripts/bench.sh >"$TMPD/evi.txt" 2>&1
+RC_E=$?
+chk "证据链断裂退出码" "$RC_E" "3"
+if grep -q '^BENCH: ERROR' "$TMPD/evi.txt"; then ok "证据链断裂标注 BENCH: ERROR"; else no "证据链断裂未标注 BENCH: ERROR"; fi
+
 rm -rf "$TMPD"
 rmdir ".artifacts" 2>/dev/null || true
 echo
@@ -277,9 +299,12 @@ echo
 # ---- 10. 异常占位标记（孤立的空内联代码；合法代码围栏不误报） ----
 echo "[10] 异常占位标记"
 BAD_MARK=""
-for f in $SCOPE_MD; do
+while IFS= read -r f; do
+    [ -n "$f" ] || continue
     if grep -qE '(^|[^`])``($|[^`])' "$f"; then BAD_MARK="$BAD_MARK $f"; fi
-done
+done <<EOF
+$SCOPE_MD
+EOF
 if [ -z "$BAD_MARK" ]; then
     ok '无孤立双反引号标记（占位请用 [[TODO: 说明]]，约定见 FILES.md §2）'
 else
