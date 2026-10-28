@@ -1,2 +1,0 @@
-BLOCKED  模板主体 md 枚举为空（git/find 枚举机制失效，禁止对空集判绿）
-exit=2

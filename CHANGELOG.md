@@ -9,6 +9,8 @@
 
 ### Added
 ### Changed
+- `.gitignore`：忽略本地工具与代理工作目录 `.crush/`、`.repo-meta/.local-agent-docs/`（后者已从版本跟踪中移除，
+  内容保留在本地）；这类目录不属于模板内容。
 ### Fixed
 ### Deprecated
 ### Removed

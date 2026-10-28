@@ -3052,6 +3052,8 @@ evidence/
 
 ### Added
 ### Changed
+- `.gitignore`：忽略本地工具与代理工作目录 `.crush/`、`.repo-meta/.local-agent-docs/`（后者已从版本跟踪中移除，
+  内容保留在本地）；这类目录不属于模板内容。
 ### Fixed
 ### Deprecated
 ### Removed
@@ -3172,6 +3174,10 @@ bench 自检与项目真实基准解耦。
 
 # 本地运行产物
 .artifacts/
+
+# 本地工具与代理工作目录（不属于模板内容，不入库）
+.crush/
+.repo-meta/.local-agent-docs/
 
 # 长期证据 evidence/ 默认纳入版本管理（制度见 docs/engineering/FILES.md §6
 # 与 evidence/README.md）：只提交脱敏摘要，禁止提交任何秘密/敏感数据。
