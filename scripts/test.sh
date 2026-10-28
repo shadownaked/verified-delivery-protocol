@@ -8,11 +8,15 @@
 #   这些检查项原本是文档里的清单，这里把它们变成脚本。
 #   Agent 不必"记住"铁律编号连续性，脚本会替它发现。
 #
-# 可移植性：只用 POSIX sh + grep/wc/find（BusyBox 兼容）；
+# 可移植性：只用 POSIX sh + grep/wc/find/awk（BusyBox 兼容）；
 #   不用 `grep -r --include`（GNU 扩展，BusyBox grep 不支持，曾导致检查[5]恒红）。
 #
-# 退出：全部通过 0；任一检查失败非 0，并打印 FAIL 行。
-# 结果状态：PASS / FAIL / BLOCKED（缺少必需命令时）
+# 反"假绿"约束（v1.1.1）：
+#   任何依赖"枚举集合"的检查（[5][7][8][10]）在集合为空或枚举能力失效时
+#   不得判 PASS，必须 FAIL 或 BLOCKED——否则检查器本身会空转成假绿。
+#
+# 退出：全部通过 0；任一检查失败非 0；缺少必需能力时 2（BLOCKED）。
+# 结果状态：PASS / FAIL / BLOCKED / N/A（不适用，仅明示，不计入通过数）
 
 set -u
 
@@ -20,22 +24,60 @@ cd "$(dirname "$0")/.."
 
 PASS=0
 FAIL=0
+NA=0
 
 ok()   { PASS=$((PASS+1)); printf 'PASS  %s\n' "$1"; }
 no()   { FAIL=$((FAIL+1)); printf 'FAIL  %s\n' "$1"; }
+na()   { NA=$((NA+1)); printf 'N/A   %s\n' "$1"; }
 chk()  { if [ "$2" = "$3" ]; then ok "$1 ($2)"; else no "$1 (实际 $2 / 期望 $3)"; fi }
 
-# ---- 前置：必需命令 ----
-for cmd in grep wc find; do
+# 模板主体 md 数量下限：低于此值视为"文档缺失或枚举机制失效"（防止空集/半空集假绿）。
+# 下游项目裁剪文档后应同步调整该值——这是显式 diff，不允许静默降级。
+SCOPE_MIN_FILES=30
+
+git_ok() {
+    command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1
+}
+
+# ---- 前置：必需命令 + 能力探测 ----
+for cmd in grep wc find awk; do
     if ! command -v "$cmd" >/dev/null 2>&1; then
         printf 'BLOCKED  缺少必需命令: %s\n' "$cmd"
         exit 2
     fi
 done
 
-# 模板主体范围：排除本地目录（.git / dist 产物 / .repo-meta 仓库管理元信息 /
-# .screenshots 本地截图 / .artifacts 本地运行产物——它们不属于模板本体）
-SCOPE_MD="$(find . -name "*.md" -not -path "./.git/*" -not -path "./dist/*" -not -path "./.repo-meta/*" -not -path "./.screenshots/*" -not -path "./.artifacts/*" | sort)"
+# find 能力探测：-name / -not -path 是 GNU 与 BusyBox 共有、Windows find.exe 没有。
+# 若 PATH 被 Windows find.exe 抢占，检查 [7] 会静默失效——先探测，探测失败直接 BLOCKED。
+if ! find . -name "*.md" -not -path "./dist/*" >/dev/null 2>&1; then
+    printf 'BLOCKED  find 缺少 -name / -not -path 能力（可能被非 POSIX 的 find 抢占 PATH）\n'
+    exit 2
+fi
+
+# 模板主体 md 枚举：
+#   有 git 时用 `git ls-files`（受控文件 + 未被忽略的新文件），天然排除 node_modules/vendor；
+#   无 git 时用 find 并排除常见第三方目录。
+# 统一排除：.git / dist 产物 / .repo-meta 仓库管理元信息 / .screenshots 本地截图 / .artifacts 本地运行产物
+list_scope_md() {
+    if git_ok; then
+        git ls-files --cached --others --exclude-standard -- "*.md" 2>/dev/null \
+            | grep -vE '^(dist|\.repo-meta|\.screenshots|\.artifacts)/' | sort
+    else
+        find . -name "*.md" \
+            -not -path "./.git/*" -not -path "./dist/*" -not -path "./.repo-meta/*" \
+            -not -path "./.screenshots/*" -not -path "./.artifacts/*" \
+            -not -path "*/node_modules/*" -not -path "*/vendor/*" \
+            | sed 's|^\./||' | sort
+    fi
+}
+
+SCOPE_MD="$(list_scope_md)"
+N_SCOPE=$(printf '%s\n' "$SCOPE_MD" | grep -c . || true)
+
+if [ "${N_SCOPE:-0}" -eq 0 ]; then
+    printf 'BLOCKED  模板主体 md 枚举为空（git/find 枚举机制失效，禁止对空集判绿）\n'
+    exit 2
+fi
 
 echo "=== VDP 体系自检 ==="
 echo
@@ -47,7 +89,7 @@ CORE="$CORE docs/PROJECT.md docs/ACCEPTANCE.md docs/BASELINES.md docs/ROADMAP.md
 CORE="$CORE docs/AUTHZ.md docs/AUTHZ.yaml"
 CORE="$CORE docs/engineering/WORKFLOW.md docs/engineering/QUALITY.md docs/engineering/FILES.md docs/engineering/BOOTSTRAP_PROMPT.md docs/engineering/OPERATIONS.md docs/engineering/SECURITY.md"
 CORE="$CORE docs/bench/benchmarks.yml"
-CORE="$CORE scripts/test.sh scripts/build-complete.sh scripts/bench.sh"
+CORE="$CORE scripts/test.sh scripts/build-complete.sh scripts/bench.sh scripts/complete-sources.txt"
 CORE="$CORE evidence/README.md evidence/operations/slo.md evidence/operations/error-budget.md evidence/security/threat-model.md evidence/security/dependency-audit.md"
 for f in $CORE; do
     if [ -f "$f" ]; then ok "存在 $f"; else no "缺失 $f"; fi
@@ -86,8 +128,8 @@ chk "门禁清单项数" "$(grep -c '^- \[ \]' ENGINEERING.md || true)" "11"
 chk "发布清单项数" "$(grep -c '^  - \[ \]' ENGINEERING.md || true)" "5"
 echo
 
-# ---- 5. VDP 标识全覆盖（新增文件必须带上体系标识） ----
-echo "[5] VDP 标识覆盖（模板主体范围内全部 md）"
+# ---- 5. VDP 标识覆盖 + 主体规模下限（空集/半空集不得判绿） ----
+echo "[5] VDP 标识覆盖与主体规模"
 TOT=0
 HIT=0
 MISSING_ID=""
@@ -100,28 +142,48 @@ for f in $SCOPE_MD; do
     fi
 done
 if [ -z "$MISSING_ID" ]; then ok "VDP 标识覆盖 ($HIT/$TOT)"; else no "VDP 标识覆盖 ($HIT/$TOT)，缺标识:$MISSING_ID"; fi
+if [ "$TOT" -ge "$SCOPE_MIN_FILES" ]; then
+    ok "主体 md 数量 ($TOT >= $SCOPE_MIN_FILES)"
+else
+    no "主体 md 数量 ($TOT < 下限 $SCOPE_MIN_FILES；文档缺失或枚举失效)"
+fi
 echo
 
-# ---- 6. 合并版产物与源文件一致性（产物过期会被抓出来） ----
+# ---- 6. 合并版产物与源文件一致性（比对集合来自清单单一事实源） ----
 echo "[6] 合并版产物新鲜度"
 OUT="dist/verified-delivery-protocol-complete.md"
+SRC_LIST="scripts/complete-sources.txt"
 if [ ! -f "$OUT" ]; then
     no "产物不存在（跑 sh scripts/build-complete.sh）"
+elif [ ! -f "$SRC_LIST" ]; then
+    no "缺失合并清单 $SRC_LIST（无法判定产物覆盖范围）"
 else
     ok "产物存在"
-    # 若任一源文件比产物新，说明产物过期
+    N_SRC=$(grep -c . "$SRC_LIST" || true)
+    chk "清单源文件数" "$N_SRC" "37"
+    chk "产物内嵌入文件数" "$(grep -c '<!-- ============ FILE:' "$OUT" || true)" "$N_SRC"
+    # 清单内任一源文件比产物新 -> 产物过期；缺失的源文件单列
     STALE=""
-    for f in ENGINEERING.md AGENTS.md docs/engineering/WORKFLOW.md docs/engineering/QUALITY.md docs/engineering/OPERATIONS.md docs/engineering/SECURITY.md docs/AUTHZ.md _PACKAGE_README.md; do
-        if [ "$f" -nt "$OUT" ]; then STALE="$STALE $f"; fi
-    done
-    if [ -z "$STALE" ]; then ok "产物未过期"; else no "产物已过期，源更新于:$STALE"; fi
-    chk "产物内嵌入文件数" "$(grep -c '<!-- ============ FILE:' "$OUT" || true)" "30"
+    MISSING_SRC=""
+    while IFS= read -r f; do
+        [ -n "$f" ] || continue
+        if [ ! -f "$f" ]; then
+            MISSING_SRC="$MISSING_SRC $f"
+        elif [ "$f" -nt "$OUT" ]; then
+            STALE="$STALE $f"
+        fi
+    done <"$SRC_LIST"
+    if [ -z "$MISSING_SRC" ]; then ok "清单源文件均存在"; else no "清单源文件缺失:$MISSING_SRC"; fi
+    if [ -z "$STALE" ]; then ok "产物未过期（全部 $N_SRC 个源比对）"; else no "产物已过期，源更新于:$STALE"; fi
 fi
 echo
 
 # ---- 7. 无空壳目录（体系明令禁止预建空目录；仅检查模板主体） ----
 echo "[7] 空目录检查（模板主体）"
-EMPTY=$(find . -type d -empty -not -path "./.git/*" -not -path "./.repo-meta/*" -not -path "./.screenshots/*" -not -path "./.artifacts/*" 2>/dev/null | tr '\n' ' ')
+EMPTY=$(find . -type d -empty \
+    -not -path "./.git/*" -not -path "./.repo-meta/*" -not -path "./.screenshots/*" \
+    -not -path "./.artifacts/*" -not -path "*/node_modules/*" -not -path "*/vendor/*" \
+    2>/dev/null | tr '\n' ' ')
 if [ -z "$EMPTY" ]; then ok "无空目录"; else no "存在空目录:$EMPTY"; fi
 echo
 
@@ -135,30 +197,76 @@ done
 chk "旧名'统一开发体系'残留数" "$OLD" "0"
 echo
 
-# ---- 9. bench 入口契约（scripts/bench.sh 是硬依赖，QUALITY.md §8） ----
-echo "[9] bench 入口契约"
-if [ -f scripts/bench.sh ]; then ok "存在 scripts/bench.sh"; else no "缺失 scripts/bench.sh"; fi
+# ---- 9. bench 入口契约（只验证契约，不执行项目真实基准） ----
+echo "[9] bench 入口契约（隔离配置，不跑真实基准）"
+for s in scripts/bench.sh scripts/test.sh scripts/build-complete.sh; do
+    if [ -f "$s" ]; then ok "存在 $s"; else no "缺失 $s"; fi
+done
+
+# 9.1 执行位：优先用 git 索引模式（跨平台可靠）；无 git 时用 -x；不可判定则明示 N/A
+if git_ok; then
+    for s in scripts/bench.sh scripts/test.sh scripts/build-complete.sh; do
+        MODE="$(git ls-files -s -- "$s" 2>/dev/null | awk '{print $1}')"
+        if [ -z "$MODE" ]; then
+            na "执行位 $s（未被 git 索引，无法判定）"
+        elif [ "$MODE" = "100755" ]; then
+            ok "执行位 $s (100755)"
+        else
+            no "执行位 $s ($MODE，期望 100755；修复：git update-index --chmod=+x $s)"
+        fi
+    done
+else
+    for s in scripts/bench.sh scripts/test.sh scripts/build-complete.sh; do
+        if [ -x "$s" ]; then ok "可执行 $s"; else no "不可执行 $s"; fi
+    done
+fi
+
+# 9.2 契约三路径：未配置 / 通过 / 失败（全部用临时合成配置，绝不触碰项目真实基准）
 TMPD=".artifacts/.bench-contract-check"
 rm -rf "$TMPD"
 mkdir -p "$TMPD"
-VDP_BENCH_EVIDENCE_ROOT="$TMPD" sh scripts/bench.sh >"$TMPD/stdout.txt" 2>&1
-BENCH_RC=$?
-if grep -q '^BENCH:' "$TMPD/stdout.txt"; then
-    ok "bench 输出契约（含 BENCH: 前缀行）"
-else
-    no "bench 输出缺少 BENCH: 前缀行（输出见 $TMPD/stdout.txt）"
-fi
-case "$BENCH_RC" in
-    0|1|2) ok "bench 退出码契约 ($BENCH_RC ∈ {0,1,2})" ;;
-    *) no "bench 退出码违约 ($BENCH_RC 不在 {0,1,2})" ;;
-esac
-if [ "$BENCH_RC" -eq 2 ]; then
-    if grep -qE 'NO_BENCHMARKS_CONFIGURED|BLOCKED' "$TMPD/stdout.txt"; then
-        ok "bench 未配置时拒绝理由明确"
+printf 'benchmarks:\n  - name: contract-pass\n    run: "true"\n' >"$TMPD/pass.yml"
+printf 'benchmarks:\n  - name: contract-fail\n    run: "exit 1"\n' >"$TMPD/fail.yml"
+
+VDP_BENCH_CONFIG="$TMPD/missing.yml" VDP_BENCH_EVIDENCE_ROOT="$TMPD/ev-u" \
+    sh scripts/bench.sh >"$TMPD/unconfigured.txt" 2>&1
+RC_U=$?
+VDP_BENCH_CONFIG="$TMPD/pass.yml" VDP_BENCH_EVIDENCE_ROOT="$TMPD/ev-p" \
+    sh scripts/bench.sh >"$TMPD/pass.txt" 2>&1
+RC_P=$?
+VDP_BENCH_CONFIG="$TMPD/fail.yml" VDP_BENCH_EVIDENCE_ROOT="$TMPD/ev-f" \
+    sh scripts/bench.sh >"$TMPD/fail.txt" 2>&1
+RC_F=$?
+
+chk "未配置时退出码" "$RC_U" "2"
+chk "全部成功时退出码" "$RC_P" "0"
+chk "基准失败时退出码" "$RC_F" "1"
+
+for f in "$TMPD/unconfigured.txt" "$TMPD/pass.txt" "$TMPD/fail.txt"; do
+    if grep -q '^BENCH:' "$f"; then ok "输出契约 BENCH: 前缀（$(basename "$f")）"; else no "输出缺少 BENCH: 前缀（$f）"; fi
+done
+
+for d in "$TMPD/ev-u" "$TMPD/ev-p" "$TMPD/ev-f"; do
+    if grep -q '"schema": "vdp-bench/1"' "$d"/[0-9]*/meta.json 2>/dev/null; then
+        ok "证据落盘 meta.json（$(basename "$d")）"
     else
-        no "bench 退出 2 但未说明 NO_BENCHMARKS_CONFIGURED/BLOCKED"
+        no "证据未落盘 meta.json（$d）"
     fi
+    if grep -q '^# BENCH 运行摘要' "$d"/[0-9]*/summary.md 2>/dev/null; then
+        ok "证据落盘 summary.md（$(basename "$d")）"
+    else
+        no "证据未落盘 summary.md（$d）"
+    fi
+done
+
+if grep -qE 'NO_BENCHMARKS_CONFIGURED|BLOCKED' "$TMPD/unconfigured.txt"; then
+    ok "未配置时拒绝理由明确"
+else
+    no "退出 2 但未说明 NO_BENCHMARKS_CONFIGURED/BLOCKED"
 fi
+if grep -q '^BENCH: OK' "$TMPD/pass.txt"; then ok "成功路径标注 BENCH: OK"; else no "成功路径缺少 BENCH: OK"; fi
+if grep -q '^BENCH: FAIL' "$TMPD/fail.txt"; then ok "失败路径标注 BENCH: FAIL"; else no "失败路径缺少 BENCH: FAIL"; fi
+
 rm -rf "$TMPD"
 echo
 
@@ -172,6 +280,9 @@ if [ -z "$BAD_MARK" ]; then
     ok '无孤立双反引号标记（占位请用 [[TODO: 说明]]，约定见 FILES.md §2）'
 else
     no "孤立双反引号标记出现在:$BAD_MARK"
+fi
+if [ "$N_SCOPE" -lt "$SCOPE_MIN_FILES" ]; then
+    no "占位标记扫描范围不足（$N_SCOPE 个文件 < 下限 $SCOPE_MIN_FILES）"
 fi
 echo
 
@@ -187,7 +298,7 @@ echo
 
 # ---- 汇总 ----
 echo "=== 汇总 ==="
-echo "PASS: $PASS    FAIL: $FAIL"
+echo "PASS: $PASS    FAIL: $FAIL    N/A: $NA"
 if [ "$FAIL" -ne 0 ]; then
     echo "结果: FAIL —— 禁止在红基线上叠加改动（铁律 F1）"
     exit 1

@@ -109,6 +109,7 @@ project-root/
 | `docs/bench/benchmarks.yml` | 项目事实 | bench 基准声明（默认未配置） |
 | `evidence/README.md` + `evidence/*` 模板 | 固定制度·模板 | 长期证据目录与 operations / security 证据模板 |
 | `scripts/test.sh` / `scripts/bench.sh` / `scripts/build-complete.sh` | 固定制度·硬依赖 | 绿基线自检 / 性能基准入口 / 合并版重生成 |
+| `scripts/complete-sources.txt` | 固定制度·单一事实源 | 合并版包含哪些源文件（`build-complete.sh` 与 `test.sh` [6] 同读一份） |
 | `docs/templates/*` ×8 | 模板 | feature/bugfix/optimization/refactor/adr/incident/release/journal |
 | `dist/verified-delivery-protocol-complete.md` | **生成产物** | 上述全部内容的单文件合并版（便携快照），由主文件重生成，非权威源 |
 | `_MERGE_NOTES.md` | 包说明 | 合并裁决，供复核 |

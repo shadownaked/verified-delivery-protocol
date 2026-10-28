@@ -68,7 +68,7 @@
 | 操作 | 实际命令 | 包含范围 |
 |---|---|---|
 | 安装依赖 | _（本模板包无运行时依赖，仅需 sh / grep / find / wc）_ | — |
-| 全量测试 | `sh scripts/test.sh` | 核心文件存在性、铁律 F1–F20 连续、阶段 P0–P7、门禁/发布清单项数、VDP 标识覆盖、产物新鲜度、空目录、旧名残留、bench 入口契约、异常占位标记、证据目录与忽略策略 |
+| 全量测试 | `sh scripts/test.sh` | 核心文件存在性、铁律 F1–F20 连续、阶段 P0–P7、门禁/发布清单项数、VDP 标识覆盖与主体规模下限、产物新鲜度（覆盖全部清单源）、空目录、旧名残留、bench 入口契约（隔离配置，不跑真实基准）、异常占位标记、证据目录与忽略策略 |
 | 构建合并版 | `sh scripts/build-complete.sh` | 重生成 `dist/verified-delivery-protocol-complete.md` |
 | 性能测量 | `sh scripts/bench.sh` | bench 契约入口：未配置基准时输出 `BENCH: NO_BENCHMARKS_CONFIGURED` 并以退出码 2 诚实拒绝（本包为文档型体系，无可测运行时性能，属预期状态）；基准声明见 `docs/bench/benchmarks.yml` |
 

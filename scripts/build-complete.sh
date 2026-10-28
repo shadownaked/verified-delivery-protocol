@@ -18,38 +18,12 @@ cd "$(dirname "$0")/.."
 OUT="dist/verified-delivery-protocol-complete.md"
 MIN_BYTES=50000
 
-FILES="
-ENGINEERING.md
-AGENTS.md
-STATE.md
-docs/engineering/WORKFLOW.md
-docs/engineering/QUALITY.md
-docs/engineering/FILES.md
-docs/engineering/OPERATIONS.md
-docs/engineering/SECURITY.md
-docs/engineering/BOOTSTRAP_PROMPT.md
-docs/AUTHZ.md
-docs/PROJECT.md
-docs/ACCEPTANCE.md
-docs/BASELINES.md
-docs/DESIGN.md
-docs/ROADMAP.md
-docs/RUNBOOK.md
-docs/BACKLOG.md
-docs/templates/task-feature.md
-docs/templates/task-bugfix.md
-docs/templates/task-optimization.md
-docs/templates/task-refactor.md
-docs/templates/adr.md
-docs/templates/incident.md
-docs/templates/release.md
-docs/templates/journal.md
-README.md
-CHANGELOG.md
-.gitignore
-_PACKAGE_README.md
-_MERGE_NOTES.md
-"
+# 合并清单的单一事实源：scripts/complete-sources.txt
+# （scripts/test.sh 检查 [6] 也读取同一份，避免"比对集合"与"实际嵌入集合"漂移）
+SRC_LIST="scripts/complete-sources.txt"
+[ -f "$SRC_LIST" ] || { echo "FAIL: 缺少合并清单 $SRC_LIST" >&2; exit 1; }
+FILES="$(grep -v '^[[:space:]]*$' "$SRC_LIST")"
+[ -n "$FILES" ] || { echo "FAIL: 合并清单为空: $SRC_LIST" >&2; exit 1; }
 
 # 前置检查：所有源文件必须存在，缺一个就报 BLOCKED 式的明确失败，不静默产出残缺品
 MISSING=""
@@ -90,10 +64,12 @@ cat > "$OUT" <<'HEADER'
 7. `docs/engineering/OPERATIONS.md` — 运营与可靠性（SLI / SLO / Error Budget）
 8. `docs/engineering/SECURITY.md` — 安全工程（阶段化安全活动）
 9. `docs/engineering/BOOTSTRAP_PROMPT.md` — 三种启动指令
-10. `docs/AUTHZ.md` — Agent 授权边界（机器可读版：docs/AUTHZ.yaml）
+10. `docs/AUTHZ.md` + `docs/AUTHZ.yaml` — Agent 授权边界（人读 + 机器可读）
 11. `docs/PROJECT.md` → `BACKLOG.md` — 项目事实文件与模板
-12. `README.md` / `CHANGELOG.md` / `.gitignore`
-13. `_PACKAGE_README.md` / `_MERGE_NOTES.md` — 包说明与合并裁决
+12. `docs/bench/benchmarks.yml` — bench 基准声明
+13. `evidence/README.md` + `evidence/*` — 长期证据目录约定与模板
+14. `README.md` / `CHANGELOG.md` / `.gitignore`
+15. `_PACKAGE_README.md` / `_MERGE_NOTES.md` — 包说明与合并裁决
 
 ---
 HEADER

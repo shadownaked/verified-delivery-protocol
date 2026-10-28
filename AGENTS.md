@@ -56,6 +56,9 @@
 
 ## 4. 每个任务的工作循环
 
+> 本节是**完整集**；`ENGINEERING.md` §5 的"开工五步 / 收工六步"是其**最小集**（会话级）。
+> 两者冲突时以 `ENGINEERING.md` 为准；未覆盖的步骤按本节执行。
+
 1. 确认目标和约束（属于哪类任务流程：feature / bugfix / optimization / refactor）。
 2. 对照 `docs/AUTHZ.md` 检查授权边界：allow 之外的动作先请求批准（ask），never 一律不做；未列出的操作默认 ask。
 3. 建立或更新任务记录。

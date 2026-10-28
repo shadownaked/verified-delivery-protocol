@@ -4,37 +4,43 @@
 # 三级授权：allow（自动执行）/ ask（必须人工批准）/ never（禁止）。
 # 默认策略：未列出的操作一律按 ask 处理。
 # 修改规则：放宽授权属于项目不变量变更，需负责人批准（见 AUTHZ.md §5）；
-#           本文件与 docs/AUTHZ.md 必须同一提交内同步修改。
-# 项目接入：把注释掉的示例复制为实际条目并填写；never 红线只能收紧不能放宽。
+#           本文件与 docs/AUTHZ.md 必须同一提交内同步修改（条目语义也必须一致）。
+#
+# 下方条目是**模板默认值**，与 AUTHZ.md §2 一一对应；下游项目接入时替换为自己的实际策略
+# （never 红线只能收紧不能放宽）。
 
 version: 1
 default: ask
 
-allow: []          # 示例：
-  # - id: read-repo
-  #   desc: 读取仓库内文件与 git 历史
-  # - id: run-local-checks
-  #   desc: 运行 scripts/ 下声明的本地验证命令（test / bench / build）
+allow:
+  - id: read-repo
+    desc: 读取仓库内文件与 git 历史
+  - id: run-local-checks
+    desc: 运行 scripts/ 下声明的本地验证命令（test / bench / build）
+  - id: update-task-records
+    desc: 创建与更新任务记录、journal、BACKLOG 条目
+  - id: local-commit
+    desc: 本地提交（仅当项目在 PROJECT.md §10 明确授权时生效）
 
-ask: []            # 示例：
-  # - id: push-remote
-  #   desc: 推送到远端仓库
-  # - id: release
-  #   desc: 发布生产环境 / 对外分发
-  # - id: spend
-  #   desc: 花钱（云资源、付费 API、采购依赖）
-  # - id: delete-data
-  #   desc: 删除或迁移数据；任何不可逆操作
-  # - id: touch-credentials
-  #   desc: 接触真实凭证（生产密钥、真实用户数据）
-  # - id: external-communication
-  #   desc: 以项目名义对外沟通
-  # - id: install-dependency
-  #   desc: 安装新依赖
-  # - id: change-gates
-  #   desc: 变更验收标准或工程门禁
-  # - id: modify-authz
-  #   desc: 修改本授权表
+ask:
+  - id: push-remote
+    desc: 推送到远端仓库 / 创建 PR / 合并到受保护分支
+  - id: release
+    desc: 发布生产环境 / 对外分发 / 公开披露
+  - id: spend
+    desc: 花钱（云资源、付费 API、采购依赖）
+  - id: delete-data
+    desc: 删除或迁移数据；任何不可逆操作
+  - id: touch-credentials
+    desc: 接触真实凭证（生产密钥、真实用户数据）
+  - id: external-communication
+    desc: 以项目名义对外沟通（发消息、回复 issue）
+  - id: install-dependency
+    desc: 安装新依赖
+  - id: change-gates
+    desc: 变更验收标准或工程门禁
+  - id: modify-authz
+    desc: 修改本授权表自身
 
 never:
   - id: leak-secrets
